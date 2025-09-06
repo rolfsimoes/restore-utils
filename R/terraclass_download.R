@@ -117,8 +117,6 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
         as_file   = TRUE
     )
 
-    eco_region_roi <- "/Users/felipecarlos/Downloads/test.gpkg"
-
     # Download all specified years
     purrr::map(years, function(year) {
         # Define output dir
