@@ -22,7 +22,7 @@
 }
 
 #' @export
-roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as_convex = FALSE) {
+roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as_convex = FALSE, use_buffer = FALSE) {
     # generate eco region geometry
     eco_region_geom <- .roi_ecoregion_sf(
         region_id = region_id,
@@ -31,7 +31,11 @@ roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as
 
     # Union
     if (as_union) {
-        eco_region_geom <- sf::st_buffer(eco_region_geom, 0.001) |>
+        if (use_buffer) {
+            eco_region_geom <- sf::st_buffer(eco_region_geom, 0.001)
+        }
+
+        eco_region_geom <- eco_region_geom |>
                            sf::st_union() |>
                            sf::st_make_valid()
     }

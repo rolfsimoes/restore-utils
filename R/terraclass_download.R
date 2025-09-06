@@ -111,10 +111,11 @@
 prepare_terraclass <- function(years, region_id, version = "v2") {
     # Get eco region polygon
     eco_region_roi <- roi_ecoregions(
-        region_id = region_id,
-        crs       = crs_bdc(),
-        as_union  = TRUE,
-        as_file   = TRUE
+        region_id  = region_id,
+        crs        = crs_bdc(),
+        as_union   = TRUE,
+        as_file    = TRUE,
+        use_buffer = TRUE
     )
 
     # Download all specified years
