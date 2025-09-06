@@ -117,6 +117,8 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
         as_file   = TRUE
     )
 
+    eco_region_roi <- "/Users/felipecarlos/Downloads/test.gpkg"
+
     # Download all specified years
     purrr::map(years, function(year) {
         # Define output dir
@@ -142,13 +144,18 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
             raster_file <- dplyr::filter(extracted_files, type == "raster")
             raster_file <- raster_file[["file"]]
 
+            # Define temporary file
+            raster_file_out <- stringr::str_replace(
+                raster_file, "v1.tif", "v1-cropped.tif"
+            )
+
             raster_object <- terra::rast(raster_file)
             raster_datatype <- terra::datatype(raster_object)
 
             # Crop raster files in a given eco region
             sits:::.gdal_crop_image(
                 file        = raster_file,
-                out_file    = raster_file,
+                out_file    = raster_file_out,
                 roi_file    = eco_region_roi,
                 as_crs      = NULL,
                 miss_value  = 0,
@@ -156,6 +163,12 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
                 multicores  = 1L,
                 overwrite   = TRUE
             )
+
+            # After crop, remove original one
+            fs::file_delete(raster_file)
+
+            # Renamed cropped
+            fs::file_move(raster_file_out, raster_file)
         }
 
         # Return!
