@@ -109,11 +109,13 @@ prepare_prodes <- function(region_id, years = 2024, version = "v2") {
     # Get eco region polygon
     eco_region_roi <- roi_ecoregions(
         region_id  = region_id,
-        crs        = crs_bdc(),
+        crs        = "EPSG:4674",
         as_union   = TRUE,
         as_file    = TRUE,
         use_buffer = TRUE
     )
+
+    eco_region_roi <- terra::vect(eco_region_roi)
 
     # Download all specified years
     purrr::map(years, function(year) {
@@ -149,15 +151,12 @@ prepare_prodes <- function(region_id, years = 2024, version = "v2") {
             raster_datatype <- terra::datatype(raster_object)
 
             # Crop raster files in a given eco region
-            sits:::.gdal_crop_image(
-                file        = raster_file,
-                out_file    = raster_file_out,
-                roi_file    = eco_region_roi,
-                as_crs      = NULL,
-                miss_value  = 0,
-                data_type   = raster_datatype,
-                multicores  = 1L,
-                overwrite   = TRUE
+            terra::crop(
+                x        = raster_object,
+                y        = eco_region_roi,
+                filename = raster_file_out,
+                NAflag   = 255,
+                mask     = FALSE
             )
 
             # After crop, remove original one
