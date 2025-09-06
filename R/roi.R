@@ -13,7 +13,7 @@
     eco_name <- .roi_ecoregion_name(region_id)
 
     # Load ecoregion roi file
-    eco_region <- suppressMessages(sf::st_read(.roi_ecoregion_data_file()))
+    eco_region <- sf::st_read(.roi_ecoregion_data_file(), quiet = TRUE)
 
     # Transform / Filter region (region 3)
     eco_region <- sf::st_transform(eco_region, crs = crs)
@@ -31,8 +31,9 @@ roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as
 
     # Union
     if (as_union) {
-        eco_region_geom <- sf::st_union(eco_region_geom) |>
-                            sf::st_make_valid()
+        eco_region_geom <- sf::st_buffer(eco_region_geom, 0.001) |>
+                           sf::st_union() |>
+                           sf::st_make_valid()
     }
 
     # Transform convex hull
@@ -46,7 +47,7 @@ roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as
         eco_region_file <- fs::file_temp(ext = "gpkg")
 
         # Save sf
-        sf::st_write(eco_region_geom, eco_region_file)
+        sf::st_write(eco_region_geom, eco_region_file, quiet = TRUE)
 
         # Update result variable
         eco_region_geom <- eco_region_file
