@@ -105,12 +105,15 @@
 }
 
 #' @export
-prepare_prodes <- function(region_id, years = 2024,  multicores = 1, version = "v2") {
+prepare_prodes <- function(region_id, years = 2024,  multicores = 1, timeout = 720, version = "v2") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
     # Download all specified years
     furrr::future_map(years, function(year) {
+        # Set timeout
+        withr::local_options(timeout = timeout)
+
         # Define output dir
         output_dir <- .prodes_dir(year = year, version = version)
 

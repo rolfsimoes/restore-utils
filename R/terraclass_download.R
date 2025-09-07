@@ -108,12 +108,15 @@
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, multicores = 1, version = "v2") {
+prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, version = "v2") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
     # Download all specified years
     furrr::future_map(years, function(year) {
+        # Set timeout
+        withr::local_options(timeout = timeout)
+
         # Define output dir
         output_dir <- .terraclass_dir(year = year, version = version)
 
