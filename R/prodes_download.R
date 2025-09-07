@@ -167,7 +167,8 @@ prepare_prodes <- function(region_id, years = 2024,  multicores = 1, timeout = 7
                 x        = raster_object,
                 y        = vector_object,
                 filename = raster_file_out,
-                NAflag   = 0,
+                datatype = raster_datatype,
+                NAflag   = 255,
                 mask     = TRUE
             )
 

@@ -170,6 +170,7 @@ prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, 
                 x        = raster_object,
                 y        = vector_object,
                 filename = raster_file_out,
+                datatype = raster_datatype,
                 NAflag   = 0,
                 mask     = TRUE
             )
