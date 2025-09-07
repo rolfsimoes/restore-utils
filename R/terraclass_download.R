@@ -110,7 +110,7 @@
 #' @export
 prepare_terraclass <- function(years, region_id, multicores = 1, version = "v2") {
     # Setup multisession workers
-    future::plan(future::multisession, workers = multicores, seed = TRUE)
+    future::plan(future::multisession, workers = multicores)
 
     # Download all specified years
     furrr::future_map(years, function(year) {
@@ -180,5 +180,7 @@ prepare_terraclass <- function(years, region_id, multicores = 1, version = "v2")
 
         # Return!
         dplyr::select(extracted_files, -.data[["processed"]])
-    })
+    },
+        .options = furrr::furrr_options(seed = TRUE)
+    )
 }

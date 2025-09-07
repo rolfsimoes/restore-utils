@@ -110,7 +110,7 @@ prepare_prodes <- function(region_id, years = 2024,  multicores = 1, version = "
     future::plan(future::multisession, workers = multicores)
 
     # Download all specified years
-    purrr::map(years, function(year) {
+    furrr::future_map(years, function(year) {
         # Define output dir
         output_dir <- .prodes_dir(year = year, version = version)
 
@@ -177,5 +177,7 @@ prepare_prodes <- function(region_id, years = 2024,  multicores = 1, version = "
 
         # Return!
         dplyr::select(extracted_files, -.data[["processed"]])
-    })
+    },
+        .options = furrr::furrr_options(seed = TRUE)
+    )
 }
