@@ -108,20 +108,12 @@
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, version = "v2") {
-    # Get eco region polygon
-    eco_region_roi <- roi_ecoregions(
-        region_id  = region_id,
-        crs        = "EPSG:4674",
-        as_union   = TRUE,
-        as_file    = TRUE,
-        use_buffer = TRUE
-    )
-
-    eco_region_roi <- terra::vect(eco_region_roi)
+prepare_terraclass <- function(years, region_id, multicores = 1, version = "v2") {
+    # Setup multisession workers
+    future::plan(future::multisession, workers = multicores, seed = TRUE)
 
     # Download all specified years
-    purrr::map(years, function(year) {
+    furrr::future_map(years, function(year) {
         # Define output dir
         output_dir <- .terraclass_dir(year = year, version = version)
 
@@ -141,6 +133,17 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
 
         # If no, crop raster using the eco region selected by the user
         if (!are_files_finished) {
+            # Get eco region polygon
+            eco_region_roi <- roi_ecoregions(
+                region_id  = region_id,
+                crs        = "EPSG:4674",
+                as_union   = TRUE,
+                as_file    = TRUE,
+                use_buffer = TRUE
+            )
+
+            eco_region_roi <- terra::vect(eco_region_roi)
+
             # Select raster file
             raster_file <- dplyr::filter(extracted_files, type == "raster")
             raster_file <- raster_file[["file"]]
@@ -153,13 +156,19 @@ prepare_terraclass <- function(years, region_id, version = "v2") {
             raster_object <- terra::rast(raster_file)
             raster_datatype <- terra::datatype(raster_object)
 
+            # Reproject polygon to raster CRS
+            vector_object <- terra::project(
+                x = eco_region_roi,
+                y = terra::crs(raster_object)
+            )
+
             # Crop raster files in a given eco region
             terra::crop(
                 x        = raster_object,
-                y        = eco_region_roi,
+                y        = vector_object,
                 filename = raster_file_out,
                 NAflag   = 0,
-                mask     = FALSE
+                mask     = TRUE
             )
 
             # After crop, remove original one
