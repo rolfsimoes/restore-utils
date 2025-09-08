@@ -108,7 +108,7 @@
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, version = "v2") {
+prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, version = "v1") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
