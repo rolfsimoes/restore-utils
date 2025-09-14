@@ -105,6 +105,33 @@
 }
 
 #' @export
+download_prodes <- function(year, output_dir, version = "v2") {
+    # Transform output dir object
+    output_dir <- fs::path(output_dir)
+
+    # Complete output dir
+    output_dir <- output_dir / version / year
+
+    # Create output dir
+    fs::dir_create(output_dir)
+
+    # Download year file
+    output_file <- .prodes_download(year = year, output_dir = output_dir)
+
+    # Extract files from zip
+    extracted_files <- .prodes_extract_files(year       = year,
+                                             file       = output_file,
+                                             output_dir = output_dir)
+
+    # Check if files are already processed
+    are_processed_already <- all(extracted_files[["processed"]])
+
+    # Return files reference
+    # (remove `processed` flag as it is only used in internal routines)
+    dplyr::select(extracted_files, -.data[["processed"]])
+}
+
+#' @export
 prepare_prodes <- function(region_id, years = 2024,  multicores = 1, timeout = 720, version = "v2") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
