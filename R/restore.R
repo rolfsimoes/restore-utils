@@ -1,21 +1,20 @@
 
 #' @export
-load_restore_map <- function(data_dir, multicores = 32, memsize = 120, labels = NULL, ...) {
+load_restore_map_bdc <- function(data_dir, multicores = 32, memsize = 120, labels = NULL, ...) {
     # Default classification label - based on classification results
     default_label <- c(
-       "1" = "2ciclos",
-       "2" = "Ag_perene",
-       "3" = "Agr. Semiperene",
-       "4" = "agua",
-       "5" = "Forest",
-       "6" = "Mountainside_Forest",
-       "7" = "past_arbustiva",
-       "8" = "past_herbacea",
-       "9" = "Riparian_Forest",
-       "10" = "Seasonally_Flooded_ICS",
-       "11" = "Silvicultura",
-       "12" = "vegetacao_secundaria",
-       "13" = "Wetland_ICS"
+        "1" = "2ciclos",
+        "2" = "Agr. Semiperene",
+        "3" = "agua",
+        "4" = "Forest",
+        "5" = "Mountainside_Forest",
+        "6" = "past_arbustiva",
+        "7" = "past_herbacea",
+        "8" = "Riparian_Forest",
+        "9" = "Seasonally_Flooded_ICS",
+        "10" = "Silvicultura",
+        "11" = "vegetacao_secundaria",
+        "12" = "Wetland_ICS"
     )
 
     if (is.null(labels)) {
