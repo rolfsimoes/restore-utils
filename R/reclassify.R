@@ -490,6 +490,39 @@ reclassify_rule14_temporal_neighbor_perene <- function(files,
 }
 
 #' @export
+reclassify_rule15_urban_area_glad <- function(cube,
+                                              mask,
+                                              reference_mask,
+                                              multicores,
+                                              memsize,
+                                              output_dir,
+                                              version) {
+    mask_ref <- sits_reclassify(
+        cube = mask,
+        mask = reference_mask,
+        rules = list(
+            "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = paste0(version, "-intermed-reference-mask")
+    )
+
+    sits_reclassify(
+        cube = cube,
+        mask = mask_ref,
+        rules = list(
+            "area_urbanizada" = mask == "URBANIZADA"
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
     purrr::map_chr(seq_len(length(files)), function(idx) {
         file_path <- files[[idx]]
