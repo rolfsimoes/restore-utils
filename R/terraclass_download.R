@@ -1,6 +1,7 @@
 
 .terraclass_files <- function() {
     files <- c(
+        "https://www.dropbox.com/scl/fi/kav1zlvaais3dr9m0x9ov/AMZ.2004.M.zip?rlkey=om48iucml9cpoin7raxc2tgg7&st=x1o5e50a&dl=1",
         "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2008.M.zip",
         "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2010.M.zip",
         "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2012.M.zip",
