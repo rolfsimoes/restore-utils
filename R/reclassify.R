@@ -149,7 +149,8 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
             "2ciclos" = cube == "2ciclos"  |
                         (cube == "Agr. Semiperene" & mask %in% c(
                             "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
-                            "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO"
+                            "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
+                            "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
                         ))
         ),
         multicores = multicores,
@@ -487,6 +488,57 @@ reclassify_rule14_temporal_neighbor_perene <- function(files,
     unlink(block_files)
     # Return!
     return(out_file)
+}
+
+#' @export
+reclassify_rule15_urban_area_glad <- function(cube,
+                                              mask,
+                                              reference_mask,
+                                              multicores,
+                                              memsize,
+                                              output_dir,
+                                              version) {
+    mask_ref <- sits_reclassify(
+        cube = mask,
+        mask = reference_mask,
+        rules = list(
+            "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = paste0(version, "-intermed-reference-mask")
+    )
+
+    sits_reclassify(
+        cube = cube,
+        mask = mask_ref,
+        rules = list(
+            "area_urbanizada" = mask == "URBANIZADA"
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
+reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+    sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "agua" = (
+                mask == "CORPO DAGUA" &
+                    !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
+            )
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
 }
 
 #' @export

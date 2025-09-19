@@ -37,6 +37,44 @@ load_restore_map_bdc <- function(data_dir, multicores = 32, memsize = 120, label
 }
 
 #' @export
+load_restore_map_glad <- function(data_dir, multicores = 32, memsize = 120, labels = NULL, ...) {
+    # Default classification label - based on classification results
+    default_label <- c(
+        "1" = "2ciclos",
+        "2" = "Agr. Semiperene",
+        "3" = "Forest",
+        "4" = "Mountainside_Forest",
+        "5" = "past_arbustiva",
+        "6" = "past_herbacea",
+        "7" = "Riparian_Forest",
+        "8" = "Seasonally_Flooded_ICS",
+        "9" = "Silvicultura",
+        "10" = "vegetacao_secundaria",
+        "11" = "Wetland_ICS"
+    )
+
+    if (is.null(labels)) {
+        labels = default_label
+    }
+
+    sits_cube(
+        source = "BDC",
+        collection = "LANDSAT-OLI-16D",
+        data_dir = data_dir,
+        memsize = memsize,
+        multicores = multicores,
+        parse_info = c("satellite", "sensor",
+                       "tile", "start_date", "end_date",
+                       "band", "version"),
+        bands = "class",
+        labels = labels,
+        ...
+    )
+}
+
+
+
+#' @export
 get_restore_masks_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
     files_dir <- create_data_dir("data/derived/masks", mask_version)
 
