@@ -49,7 +49,10 @@ reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsi
 #' @export
 reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year) {
     # build args for expression
-    residuals_years <- paste0("r", 2010:rarg_year)
+    residuals_years <- c()
+    if (rarg_year >= 2010) {
+        residuals_years <- paste0("r", 2010:rarg_year)
+    }
     deforestation_years <- paste0("d", 2000:(rarg_year - 1))
     deforestation_years <- c(deforestation_years, residuals_years)
 
