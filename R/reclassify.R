@@ -545,6 +545,38 @@ reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output
 }
 
 #' @export
+reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+    sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "pasto_semiperene_2" = cube == "Agr. Semiperene" &
+                mask != "CULTURA AGRICOLA SEMIPERENE" #tc2008
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
+reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+    sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "2ciclos" = cube == "2ciclos" | cube == "pasto_semiperene_2" &
+                mask == "AGRICULTURA_ANUAL" # tc2004
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
     purrr::map_chr(seq_len(length(files)), function(idx) {
         file_path <- files[[idx]]
