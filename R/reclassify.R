@@ -523,6 +523,24 @@ reclassify_rule15_urban_area_glad <- function(cube,
 }
 
 #' @export
+reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+    sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "agua" = (
+                mask == "CORPO DAGUA" &
+                    !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
+            )
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
     purrr::map_chr(seq_len(length(files)), function(idx) {
         file_path <- files[[idx]]
