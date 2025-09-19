@@ -149,7 +149,8 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
             "2ciclos" = cube == "2ciclos"  |
                         (cube == "Agr. Semiperene" & mask %in% c(
                             "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
-                            "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO"
+                            "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
+                            "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
                         ))
         ),
         multicores = multicores,
