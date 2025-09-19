@@ -567,7 +567,7 @@ reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, me
         mask = mask,
         rules = list(
             "2ciclos" = cube == "2ciclos" | cube == "pasto_semiperene_2" &
-                mask == "AGRICULTURA_ANUAL" # tc2004
+                mask %in% c("AGRICULTURA_ANUAL", "CULTURA AGRICOLA TEMPORARIA")
         ),
         multicores = multicores,
         memsize = memsize,
