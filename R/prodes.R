@@ -121,7 +121,7 @@ load_prodes_2000 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2001 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2000)
+    prodes_dir <- .prodes_dir(version = version, year = 2001)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
@@ -174,7 +174,7 @@ load_prodes_2001 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2002 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2000)
+    prodes_dir <- .prodes_dir(version = version, year = 2002)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
@@ -227,7 +227,7 @@ load_prodes_2002 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2003 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2000)
+    prodes_dir <- .prodes_dir(version = version, year = 2003)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
@@ -280,7 +280,7 @@ load_prodes_2003 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2004 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2000)
+    prodes_dir <- .prodes_dir(version = version, year = 2004)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
@@ -386,7 +386,7 @@ load_prodes_2005 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2006 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2005)
+    prodes_dir <- .prodes_dir(version = version, year = 2006)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
@@ -439,7 +439,7 @@ load_prodes_2006 <- function(version = "v2", multicores = 32, memsize = 120) {
 
 #' @export
 load_prodes_2007 <- function(version = "v2", multicores = 32, memsize = 120) {
-    prodes_dir <- .prodes_dir(version = version, year = 2005)
+    prodes_dir <- .prodes_dir(version = version, year = 2007)
     prodes_rds <- .prodes_rds(prodes_dir)
 
     if (fs::file_exists(prodes_rds)) {
