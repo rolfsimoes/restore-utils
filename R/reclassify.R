@@ -718,7 +718,7 @@ reclassify_remap_pixels <- function(file,
     # Merge raster blocks
     sits:::.raster_merge_blocks(
         out_files = file_out,
-        base_file = files,
+        base_file = file,
         block_files = block_files,
         data_type = "INT1U",
         missing_value = 255,
