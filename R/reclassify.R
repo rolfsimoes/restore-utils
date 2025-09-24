@@ -634,7 +634,7 @@ reclassify_remap_pixels <- function(file,
         ncols = sits:::.raster_ncols(rast_template)
     )
     # Get block size
-    block <- sits:::.raster_file_blocksize(sits:::.raster_open_rast(files))
+    block <- sits:::.raster_file_blocksize(sits:::.raster_open_rast(file))
     # Check minimum memory needed to process one block
     job_block_memsize <- sits:::.jobs_block_memsize(
         block_size = sits:::.block_size(block = block, overlap = 0),
@@ -718,7 +718,7 @@ reclassify_remap_pixels <- function(file,
     # Merge raster blocks
     sits:::.raster_merge_blocks(
         out_files = file_out,
-        base_file = files,
+        base_file = file,
         block_files = block_files,
         data_type = "INT1U",
         missing_value = 255,
