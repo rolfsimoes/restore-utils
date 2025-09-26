@@ -118,9 +118,11 @@ cube_to_rgb_mosaic_ogh <- function(cube,
         )
 
         # warp
-        system(paste(
-            "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
-        ))
+        if (!is.null(roi_file)) {
+            system(paste(
+                "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
+            ))
+        }
 
         # create mbtiles
         system(paste(
@@ -259,9 +261,11 @@ cube_to_rgb_mosaic_bdc <- function(cube,
         )
 
         # warp
-        system(paste(
-            "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
-        ))
+        if (!is.null(roi_file)) {
+            system(paste(
+                "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
+            ))
+        }
 
         # create mbtiles
         system(paste(
