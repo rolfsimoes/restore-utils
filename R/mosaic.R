@@ -120,14 +120,14 @@ cube_to_rgb_mosaic_ogh <- function(cube,
         # warp
         if (!is.null(roi_file)) {
             system(paste(
-                "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
+                "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, rgb_file, "-overwrite", sep = " "
             ))
         }
 
         # create mbtiles
         system(paste(
             "gdal_translate -of MBTILES",
-            mosaic_file,
+            rgb_file,
             mosaic_mbtiles,
             sep = " "
         ))
