@@ -131,9 +131,6 @@ download_prodes <- function(year, output_dir, version = "v2") {
                                              file       = output_file,
                                              output_dir = output_dir)
 
-    # Check if files are already processed
-    are_processed_already <- all(extracted_files[["processed"]])
-
     # Return files reference
     # (remove `processed` flag as it is only used in internal routines)
     dplyr::select(extracted_files, -.data[["processed"]])

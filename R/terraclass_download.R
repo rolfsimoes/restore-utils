@@ -109,6 +109,27 @@
 }
 
 #' @export
+download_terraclass <- function(year, output_dir, version = "v1") {
+    # Define output dir
+    output_dir <- .terraclass_dir(year = year, version = version)
+
+    # Create directory
+    fs::dir_create(output_dir)
+
+    # Download year file
+    output_file <- .terraclass_download(year = year, output_dir = output_dir)
+
+    # Extract files from zip
+    extracted_files <- .terraclass_extract_files(year       = year,
+                                                 file       = output_file,
+                                                 output_dir = output_dir)
+
+    # Return files reference
+    # (remove `processed` flag as it is only used in internal routines)
+    dplyr::select(extracted_files, -.data[["processed"]])
+}
+
+#' @export
 prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, version = "v1") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
