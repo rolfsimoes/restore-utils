@@ -39,9 +39,9 @@ double modal(const NumericVector& neigh) {
 }
 
 // [[Rcpp::export]]
-NumericVector context_cleaner(const NumericMatrix& x, int ncols, int nrows,
-                              int band, int window_size, int target_class,
-                              int mode_class) {
+NumericVector C_context_cleaner(const NumericMatrix& x, int ncols, int nrows,
+                                int band, int window_size, int target_class,
+                                int mode_class) {
     // initialize result vectors
     NumericVector res(x.nrow());
     NumericVector neigh(window_size * window_size);
