@@ -288,3 +288,98 @@ cube_to_rgb_mosaic_bdc <- function(cube,
     # return!
     return(mosaic_files)
 }
+
+
+#' @export
+load_mosaic_glad <- function(data_dir, multicores = 32, memsize = 120) {
+    mosaic_dir <- fs::path(data_dir)
+    mosaic_rds <- mosaic_dir / "mosaic.rds"
+
+    if (fs::file_exists(mosaic_rds)) {
+
+        mosaic <- readRDS(mosaic_rds)
+
+    } else {
+        mosaic <- sits_cube(
+            source = "MPC",
+            collection = "LANDSAT-C2-L2",
+            data_dir = mosaic_dir,
+            multicores = multicores,
+            memsize = memsize,
+            parse_info = c("satellite", "sensor",
+                           "tile", "start_date", "end_date",
+                           "band", "version"),
+            bands = "class",
+            labels = c(
+                "1"  = "Agricultura_Anual",
+                "2"  = "Agricultura_Semiperene",
+                "3"  = "Floresta",
+                "5"  = "Pastagem_Arbustiva",
+                "6"  = "Pastagem_Herbacea",
+                "8"  = "Sazonalmente_Inundada_ICS",
+                "9"  = "Silvicultura",
+                "10" = "Vegetacao_Secundaria",
+                "11" = "Area_Umida_ICS",
+                "12" = "Desmatamento_Do_Ano",
+                "13" = "Pasto_Wetland",
+                "14" = "Pasto_Silvicultura",
+                "15" = "Pasto_Semiperene",
+                "16" = "Mineracao",
+                "17" = "Area_Urbanizada",
+                "18" = "Agua",
+                "19" = "Natural_Nao_Florestal"
+            )
+        )
+
+        saveRDS(mosaic, mosaic_rds)
+    }
+    mosaic
+}
+
+
+#' @export
+load_mosaic_bdc <- function(data_dir, multicores = 32, memsize = 120) {
+    mosaic_dir <- fs::path(data_dir)
+    mosaic_rds <- mosaic_dir / "mosaic.rds"
+
+    if (fs::file_exists(mosaic_rds)) {
+
+        mosaic <- readRDS(mosaic_rds)
+
+    } else {
+        mosaic <- sits_cube(
+            source = "MPC",
+            collection = "LANDSAT-C2-L2",
+            data_dir = mosaic_dir,
+            multicores = multicores,
+            memsize = memsize,
+            parse_info = c("satellite", "sensor",
+                           "tile", "start_date", "end_date",
+                           "band", "version"),
+            bands = "class",
+            labels = c(
+                "1"   = "Agricultura_Anual",
+                "2"   = "Agricultura_Semiperene",
+                "3"   = "Agua",
+                "4"   = "Floresta",
+                "6"   = "Pastagem_Arbustiva",
+                "7"   = "Pastagem_Herbacea",
+                "9"   = "Sazonalmente_Inundada_ICS",
+                "10"  = "Silvicultura",
+                "11" = "Vegetacao_Secundaria",
+                "12" = "Area_Umida_ICS",
+                "13" = "Desmatamento_Do_Ano",
+                "14" = "Pasto_Wetland",
+                "15" = "Pasto_Silvicultura",
+                "16" = "Pasto_Semiperene",
+                "17" = "Mineracao",
+                "18" = "Area_Urbanizada",
+                "19" = "Natural_Nao_Florestal"
+            )
+        )
+
+        saveRDS(mosaic, mosaic_rds)
+    }
+    mosaic
+}
+

@@ -10,6 +10,23 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// context_cleaner
+NumericVector context_cleaner(const NumericMatrix& x, int ncols, int nrows, int band, int window_size, int target_class, int mode_class);
+RcppExport SEXP _restoreutils_context_cleaner(SEXP xSEXP, SEXP ncolsSEXP, SEXP nrowsSEXP, SEXP bandSEXP, SEXP window_sizeSEXP, SEXP target_classSEXP, SEXP mode_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
+    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< int >::type band(bandSEXP);
+    Rcpp::traits::input_parameter< int >::type window_size(window_sizeSEXP);
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    Rcpp::traits::input_parameter< int >::type mode_class(mode_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(context_cleaner(x, ncols, nrows, band, window_size, target_class, mode_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_remap_values
 NumericMatrix C_remap_values(NumericMatrix& data, int source, int target);
 RcppExport SEXP _restoreutils_C_remap_values(SEXP dataSEXP, SEXP sourceSEXP, SEXP targetSEXP) {
@@ -51,6 +68,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_restoreutils_context_cleaner", (DL_FUNC) &_restoreutils_context_cleaner, 7},
     {"_restoreutils_C_remap_values", (DL_FUNC) &_restoreutils_C_remap_values, 3},
     {"_restoreutils_C_trajectory_transition_analysis", (DL_FUNC) &_restoreutils_C_trajectory_transition_analysis, 3},
     {"_restoreutils_C_trajectory_neighbor_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_analysis, 3},
