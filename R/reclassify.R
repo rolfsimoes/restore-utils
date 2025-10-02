@@ -577,6 +577,46 @@ reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, me
 }
 
 #' @export
+reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
+                                     output_dir, version, rarg_year) {
+    # build args for expression
+    terraclass_years <- c(2008, 2010, 2012, 2014, 2018, 2020, 2022)
+
+    if (!rarg_year %in% terraclass_years) {
+        rules_expression <- bquote(
+            list(
+                "Perene" = (
+                    cube %in% c("Vegetacao_Secundaria" ,"Pastagem_Arbustiva") &
+                        mask == "CULTURA AGRICOLA PERENE"
+                )
+            )
+        )
+    } else {
+        rules_expression <- bquote(
+            list(
+                "Perene" = (
+                    mask == "CULTURA AGRICOLA PERENE"
+                )
+            )
+        )
+    }
+
+    # reclassify!
+    eval(bquote(
+        sits_reclassify(
+            cube = cube,
+            mask = mask,
+            rules = .(rules_expression),
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir,
+            version = version
+        )
+    ))
+}
+
+
+#' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
     purrr::map_chr(seq_len(length(files)), function(idx) {
         file_path <- files[[idx]]
