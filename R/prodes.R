@@ -9,8 +9,183 @@
     fs::path(prodes_dir) / "prodes.rds"
 }
 
+.prodes_nonforest_download <- function(output_dir) {
+    # Ensure output directory exists
+    fs::dir_create(output_dir)
+
+    # List of dataset URLs
+    urls <- c(
+        yearly_deforestation_nf           = "https://terrabrasilis.dpi.inpe.br/download/dataset/amz-prodes/vector/yearly_deforestation_nf_biome.zip",
+        residual_biome                    = "https://terrabrasilis.dpi.inpe.br/download/dataset/amz-prodes/vector/residual_biome.zip",
+        accumulated_deforestation_2000_nf = "https://terrabrasilis.dpi.inpe.br/download/dataset/amz-prodes/vector/accumulated_deforestation_2000_nf_biome.zip"
+    )
+
+    # Iterate over URLs, download, unzip, and collect .shp
+    purrr::imap_dfr(urls, function(url, name) {
+        # Subdirectory for this dataset
+        dataset_dir <- fs::path(output_dir, name)
+
+        # If folder exists, skip download
+        if (fs::dir_exists(dataset_dir)) {
+            result <- fs::dir_ls(dataset_dir, regexp = "\\.shp$", recurse = TRUE) |>
+                sf::st_read(quiet = TRUE) |>
+                sf::st_make_valid() |>
+                dplyr::filter(!sf::st_is_empty(.data[["geometry"]])) |>
+                dplyr::mutate(year = as.numeric(stringr::str_replace_all(.data[["class_name"]], "[rd]", ""))) |>
+                dplyr::select(.data[["year"]])
+
+            # Return existing result
+            return(result)
+        }
+
+        # Temporary file for zip
+        tmpfile <- fs::file_temp(ext = ".zip")
+
+        # Download
+        download.file(url, tmpfile, mode = "wb")
+
+        # Create dir
+        fs::dir_create(dataset_dir)
+
+        # Unzip
+        unzip(tmpfile, exdir = dataset_dir)
+
+        # Delete temp file
+        fs::file_delete(tmpfile)
+
+        # Find `.shp` files
+        shp_files <- fs::dir_ls(dataset_dir, regexp = "\\.shp$", recurse = TRUE)
+
+        if (length(shp_files) == 0) {
+            return(NULL)
+        }
+
+        suppressWarnings(
+            sf::st_read(shp_files, quiet = TRUE) |>
+                sf::st_make_valid() |>
+                dplyr::filter(!sf::st_is_empty(.data[["geometry"]])) |>
+                dplyr::mutate(year = as.numeric(stringr::str_replace_all(.data[["class_name"]], "[rd]", ""))) |>
+                dplyr::select(.data[["year"]])
+        )
+    })
+}
+
+.prodes_nonforest_rasterize <- function(prodes, output_dir, base_class_id = 1) {
+    # Create output directory
+    output_dir <- fs::path(output_dir)
+    fs::dir_create(output_dir)
+
+    # Working CRS for rasterization (meters)
+    crs_rast <- "EPSG:3857"
+
+    # Final CRS
+    crs_final <- "EPSG:4674"
+
+    # Remove invalid geometries
+    prodes_valid <- sf::st_is_valid(prodes)
+    prodes <- prodes[prodes_valid,]
+
+    # classes / ids
+    classes <- sort(unique(prodes[["year"]]))
+    classes_len <- length(classes)
+    classes_ids <- seq(base_class_id, by = 1, length.out = classes_len)
+
+    # Transform SF to raster CRS
+    prodes_3857 <- sf::st_transform(prodes, crs_rast)
+
+    purrr::map_dfr(seq_len(classes_len), function(i) {
+        year_i <- classes[[i]]
+        class_id <- classes_ids[[i]]
+
+        # Subset one year and set ``year`` as the class field
+        class_sf <- prodes_3857 |>
+            dplyr::filter(.data[["year"]] == !!year_i) |>
+            dplyr::mutate(class = class_id)
+
+        # Return NA row if no features for that year
+        if (nrow(class_sf) == 0) {
+            return(tibble::tibble(
+                file = NA_character_,
+                year = as.integer(year_i),
+                class_id = class_id
+            ))
+        }
+
+        # Define output file
+        file_stage <- output_dir / paste0(year_i, "-stage.tif")
+
+        file_final <- "LANDSAT_TM-ETM-OLI_MOSAIC_XYZ-01-01_XYZ-12-31_class_v1.tif"
+        file_final <- stringr::str_replace_all(file_final, "XYZ", as.character(year_i))
+        file_final <- fs::path(output_dir, file_final)
+
+        meta <- tibble::tibble(
+            file = file_final,
+            year = as.integer(year_i),
+            class_id = class_id
+        )
+
+        if (fs::file_exists(file_final)) {
+            return(meta)
+        }
+
+        # Create temp file to save the current sf object
+        tmp_gpkg <- fs::file_temp(pattern = paste0("year_", year_i, "_"), ext = ".gpkg")
+
+        # Write current sf object
+        sf::st_write(class_sf, dsn = tmp_gpkg, layer = "year", quiet = TRUE)
+
+        # Define raster extent in `gdal rasterize` format
+        sf_bbox <- sf::st_bbox(class_sf)
+
+        # Rasterize!
+        gdalUtilities::gdal_rasterize(
+            src_datasource = tmp_gpkg,
+            dst_filename   = file_final, # file_stage,
+            a              = "class",
+            at             = TRUE,
+            tr             = c(10, 10),
+            te             = sf_bbox,
+            ot             = "UInt16",
+            init           = 255,
+            a_nodata       = 255,
+            co             = c("COMPRESS=DEFLATE", "BIGTIFF=YES"),
+            a_srs          = sf::st_crs(crs_rast)$wkt
+        )
+
+        # Reproject to final projection
+        # gdalUtilities::gdalwarp(
+        #   srcfile  = file_stage,
+        #   dstfile  = file_final,
+        #   t_srs    = sf::st_crs(crs_final)$wkt,
+        #   r        = "near",
+        #   multi    = TRUE,
+        #   wo       = c("NUM_THREADS=ALL_CPUS"),
+        #   co       = c("COMPRESS=DEFLATE", "TILED=YES", "BIGTIFF=YES"),
+        #   srcnodata = 255,
+        #   dstnodata = 255,
+        #   overwrite = TRUE
+        # )
+
+        # Add overviews
+        sf::gdal_addo(file_final)
+
+        # Cleanup
+        # fs::file_delete(file_stage)
+        fs::file_delete(tmp_gpkg)
+
+        meta
+    })
+}
+
+
 #' @export
-prodes_generate_forest_mask <- function(target_year, version = "v2", multicores = 32, memsize = 120, prodes_loader = load_prodes_2024) {
+prodes_generate_forest_mask <- function(target_year,
+                                        version = "v2",
+                                        multicores = 32,
+                                        memsize = 120,
+                                        prodes_loader = load_prodes_2024,
+                                        nonforest_mask = TRUE,
+                                        nonforest_year = NULL) {
     if (target_year >= 2024) {
         cli::cli_abort(
             "Nothing to do: 2024 is the most recent year; the forest in this year represents the actual available forest"
@@ -54,7 +229,7 @@ prodes_generate_forest_mask <- function(target_year, version = "v2", multicores 
     )
 
     # reclassify!
-    eval(bquote(
+    prodes_forest_mask <- eval(bquote(
         sits_reclassify(
             cube = prodes_cube,
             mask = prodes_cube,
@@ -65,6 +240,77 @@ prodes_generate_forest_mask <- function(target_year, version = "v2", multicores 
             version = "v1"
         )
     ))
+
+    # If required, mask non-forest
+    if (nonforest_mask) {
+        # Check if non-forest year is available
+        if (is.null(nonforest_year)) {
+            # If not, inform user
+            cli::cli_warn("To mask non-forest, you need to inform the `nonforest_year` argument.")
+
+            # Return current cube
+            return(prodes_forest_mask)
+        }
+
+        # Define current deforestation year label
+        current_deforestation_year <- paste0("d", target_year)
+
+        # Define output directory
+        output_dir_nonforest <- output_dir / "non-forest" / nonforest_year
+
+        # Create output directory
+        fs::dir_create(output_dir_nonforest)
+
+        # Download non-forest data
+        prodes_nonforest <- .prodes_nonforest_download(output_dir_nonforest)
+
+        # Filter by year
+        prodes_nonforest <- output_dir_nonforest |>
+                                dplyr::filter(.data[["year"]] == !!nonforest_year)
+
+        # Rasterize non-forest
+        prodes_nonforest <- .prodes_nonforest_rasterize(
+            prodes        = prodes_nonforest,
+            output_dir    = output_dir_nonforest,
+            base_class_id = 1 # as this is yearly - it is ok to keep 1
+        )
+
+        # Load non-forest as cube
+        prodes_nonforest <- sits::sits_cube(
+            source     = "MPC",
+            collection = "LANDSAT-C2-L2",
+            bands      = "class",
+            tiles      = "mosaic",
+            data_dir   = output_dir_nonforest,
+            labels     = c(
+                "1" = "CurrentDeforestation"
+            )
+        )
+
+        # Build expression
+        rules_expression <- bquote(
+            setNames(
+                list(cube == .(current_deforestation_year) | mask == "CurrentDeforestation"),
+                .(current_deforestation_year)
+            )
+        )
+
+        # Apply deforestation in non-forest areas
+        prodes_forest_mask <- eval(bquote(
+            sits::sits_reclassify(
+                cube       = prodes_forest_mask,
+                mask       = prodes_nonforest,
+                rules      = .(rules_expression),
+                multicores = multicores,
+                memsize    = memsize,
+                output_dir = output_dir,
+                version    = "v1"
+            )
+        ))
+    }
+
+    # Return result!
+    return(prodes_forest_mask)
 }
 
 #' @export
