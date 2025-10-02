@@ -103,3 +103,31 @@ get_restore_masks_files <- function(mask_version, files_version, multicores = 32
     return(files)
 }
 
+
+
+#' @export
+get_restore_assets_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
+    files_dir <- create_data_dir("data/derived/masks/base", mask_version)
+    files_pattern <- "LANDSAT_TM-ETM-OLI_MOSAIC_2024-01-01_2024-12-31_class_v1\\.tif$"
+
+    files <- fs::dir_ls(
+        path    = files_dir,
+        recurse = TRUE,
+        regexp  = files_pattern
+    )
+
+    years <- get_mask_file_year(files)
+
+    # sort files by year
+    ordered_indices <- order(years)
+    files <- files[ordered_indices]
+    years <- years[ordered_indices]
+
+    expected_years <- seq(min(years), max(years))
+
+    if (!all(years == expected_years)) {
+        stop("Sanity check failed: years are missing or out of order.\nFound years: ", paste(years, collapse = ", "))
+    }
+
+    return(files)
+}
