@@ -187,7 +187,14 @@ prodes_generate_mask <- function(target_year,
     # Create output dir
     fs::dir_create(output_dir)
 
-    # build expression
+    # Define version
+    base_version <- "v1"
+
+    if (nonforest_mask) {
+        base_version <- "v1-intermediate"
+    }
+
+    # Build reclassification expression
     rules_expression <- bquote(
         list(
             "Vegetação Nativa" = cube == "Vegetação Nativa" |
@@ -195,16 +202,16 @@ prodes_generate_mask <- function(target_year,
         )
     )
 
-    # reclassify!
+    # Reclassify!
     prodes_forest_mask <- eval(bquote(
         sits_reclassify(
-            cube = prodes_cube,
-            mask = prodes_cube,
-            rules = .(rules_expression),
+            cube       = prodes_cube,
+            mask       = prodes_cube,
+            rules      = .(rules_expression),
             multicores = multicores,
-            memsize = memsize,
+            memsize    = memsize,
             output_dir = output_dir,
-            version = "v1"
+            version    = base_version
         )
     ))
 
