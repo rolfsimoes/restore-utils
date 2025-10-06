@@ -241,7 +241,8 @@ prodes_generate_mask <- function(target_year,
             tiles      = "mosaic",
             data_dir   = output_dir_nonforest,
             labels     = c(
-                "1" = "CurrentDeforestation"
+                "1"   = "CurrentDeforestation",
+                "255" = "NoData"
             )
         )
 
