@@ -151,7 +151,7 @@ prodes_generate_mask <- function(target_year,
                                  version = "v2",
                                  multicores = 32,
                                  memsize = 120,
-                                 prodes_loader = load_prodes_2024,
+                                 prodes_loader = NULL,
                                  nonforest_mask = FALSE) {
     if (target_year >= 2024) {
         cli::cli_abort(
@@ -172,9 +172,16 @@ prodes_generate_mask <- function(target_year,
     # All of these deforestation years correspond to forest in 2016.
     deforestation_years <- paste0("d", (target_year + 1):2024)
 
-    # Load PRODES 2024 cube
-    # Why 2024 ? This is the current version of PRODES available. We always go
-    # from the latest PRODES year available.
+    # Define PRODES loader
+    if (is.null(prodes_loader)) {
+        prodes_loader <- load_prodes_2024
+
+        if (target_year <= 2007) {
+            prodes_loader <- get(paste0("load_prodes_", target_year))
+        }
+    }
+
+    # Load PRODES cube
     prodes_cube <- prodes_loader(
         version    = version,
         multicores = multicores,
@@ -194,26 +201,31 @@ prodes_generate_mask <- function(target_year,
         base_version <- "v1-intermediate"
     }
 
-    # Build reclassification expression
-    rules_expression <- bquote(
-        list(
-            "Vegetação Nativa" = cube == "Vegetação Nativa" |
-                                 cube %in% .(deforestation_years)
-        )
-    )
-
     # Reclassify!
-    prodes_forest_mask <- eval(bquote(
-        sits_reclassify(
-            cube       = prodes_cube,
-            mask       = prodes_cube,
-            rules      = .(rules_expression),
-            multicores = multicores,
-            memsize    = memsize,
-            output_dir = output_dir,
-            version    = base_version
+    if (target_year >= 2008) {
+        # Build reclassification expression
+        rules_expression <- bquote(
+            list(
+                "Vegetação Nativa" = cube == "Vegetação Nativa" |
+                    cube %in% .(deforestation_years)
+            )
         )
-    ))
+
+        prodes_forest_mask <- eval(bquote(
+            sits::sits_reclassify(
+                cube       = prodes_cube,
+                mask       = prodes_cube,
+                rules      = .(rules_expression),
+                multicores = multicores,
+                memsize    = memsize,
+                output_dir = output_dir,
+                version    = base_version
+            )
+        ))
+    } else {
+        # If it is target_year <= 2007, use original PRODES cube
+        prodes_forest_mask <- prodes_cube
+    }
 
     # If required, mask non-forest
     if (nonforest_mask) {
@@ -269,7 +281,7 @@ prodes_generate_mask <- function(target_year,
                 multicores = multicores,
                 memsize    = memsize,
                 output_dir = output_dir,
-                version    = "v1"
+                version    = "mask"
             )
         ))
     }
