@@ -78,7 +78,8 @@ roi_amazon_biome <- function(as_line = TRUE, as_file = FALSE, as_convex = FALSE,
     amazon_geom <- .roi_amazon_biome_sf()
 
     if (as_line) {
-        amazon_geom <- sf::st_boundary(amazon_geom)
+        amazon_geom <- sf::st_boundary(amazon_geom) |>
+                        sf::st_cast("POLYGON")
     }
 
     # apply buffer if required
