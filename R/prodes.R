@@ -238,7 +238,7 @@ prodes_generate_mask <- function(target_year,
             source     = "MPC",
             collection = "LANDSAT-C2-L2",
             bands      = "class",
-            tiles      = "mosaic",
+            tiles      = "MOSAIC",
             data_dir   = output_dir_nonforest,
             labels     = c(
                 "1"   = "CurrentDeforestation",
