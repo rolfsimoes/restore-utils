@@ -96,7 +96,7 @@
 
     # Define file output metadata
     meta <- tibble::tibble(
-        file       = file_final,
+        file       = file_output,
         start_date = as.integer(start_date),
         end_date   = as.integer(end_date),
         class_id   = class_id
@@ -123,7 +123,7 @@
     # Rasterize!
     gdalUtilities::gdal_rasterize(
         src_datasource = tmp_gpkg,
-        dst_filename   = file_final,
+        dst_filename   = file_output,
         a              = "class",
         at             = TRUE,
         tr             = c(10, 10),
@@ -136,7 +136,7 @@
     )
 
     # Add overviews
-    sf::gdal_addo(file_final)
+    sf::gdal_addo(file_output)
 
     # Cleanup
     fs::file_delete(tmp_gpkg)
