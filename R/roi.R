@@ -27,9 +27,15 @@
         dplyr::select(-gid, -id, -grs_schema)
 }
 
-.roi_amazon_biome_sf <- function() {
+.roi_amazon_biome_sf <- function(crs = NULL) {
     # Load ecoregion roi file
     eco_region <- sf::st_read(.roi_amazon_biome_data_file(), quiet = TRUE)
+
+    if (!is.null(crs)) {
+        eco_region <- sf::st_transform(eco_region, crs = crs)
+    }
+
+    return(eco_region)
 }
 
 #' @export
@@ -73,22 +79,18 @@ roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as
 }
 
 #' @export
-roi_amazon_biome <- function(as_line = TRUE, as_file = FALSE, as_convex = FALSE, use_buffer = FALSE) {
+roi_amazon_biome <- function(crs = NULL, as_file = FALSE, as_convex = FALSE, use_buffer = FALSE) {
     # generate eco region geometry
-    amazon_geom <- .roi_amazon_biome_sf()
-
-    if (as_line) {
-        amazon_geom <- sf::st_boundary(amazon_geom) |>
-                        sf::st_cast("POLYGON")
-    }
+    amazon_geom <- .roi_amazon_biome_sf(crs = crs) |>
+                    sf::st_make_valid()
 
     # apply buffer if required
-    if (!as_line && use_buffer) {
+    if (use_buffer) {
         amazon_geom <- sf::st_buffer(amazon_geom, 0.001)
     }
 
     # transform convex hull
-    if (!as_line && as_convex) {
+    if (as_convex) {
         amazon_geom <- sf::st_union(amazon_geom) |>
             sf::st_convex_hull()
     }
