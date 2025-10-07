@@ -753,22 +753,6 @@ reclassify_rule20_temporal_trajectory_urban <- function( files,
 
 
 #' @export
-reclassify_rule21_agriculture_in_urban <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
-        cube = cube,
-        mask = mask,
-        rules = list(
-            "area_urbanizada" = cube == "2ciclos" & mask == "URBANIZADA"
-        ),
-        multicores = multicores,
-        memsize = memsize,
-        output_dir = output_dir,
-        version = version
-    )
-}
-
-
-#' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
     purrr::map_chr(seq_len(length(files)), function(idx) {
         file_path <- files[[idx]]
