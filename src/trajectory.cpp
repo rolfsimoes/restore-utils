@@ -59,3 +59,81 @@ NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_c
 
     return data;
 }
+
+
+// [[Rcpp::export]]
+NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask, int urban_class_id, int forest_class_id, int forest_class_id_mask) {
+    int npixel = data.nrow();
+    int nyear = data.ncol();
+
+    for (int i = 0; i < npixel; i++) {
+        int forest_index = -1;
+        int urban_index = -1;
+        int urban_change = 0;
+
+        // Looking for urban in the series
+        for (int j = 0; j < nyear; j++) {
+            if (data(i, j) == urban_class_id) {
+                urban_index = j;
+            }
+        }
+
+        // If urban exist, index will not be `-1`
+        if (urban_index != -1) {
+
+            // Looking for changes in the time-series
+            for (int j = urban_index; j < nyear; j++) {
+                if (urban_change) {
+                    break;
+                }
+
+                if (data(i, j) != urban_class_id) {
+                    urban_change = 1;
+
+                    break;
+                }
+            }
+
+        }
+
+        // Check if change goes to forest
+        if (urban_change) {
+            // Looking for forest
+            for (int j = urban_index; j < nyear; j++) {
+                // If forest was already identified, skip operation
+                if (forest_index != -1) {
+                    break;
+                }
+
+                // If is a forest, save the index
+                if (data(i, j) == forest_class_id) {
+                    forest_index = j;
+
+                    break;
+                }
+            }
+        }
+
+        // If we change the firest index, this means we identify forest
+        // in a urban area time-series
+        if (forest_index != -1) {
+
+            // Transforming everything in forest
+            for (int j = urban_index; j < nyear; j++) {
+                if (mask(i, j) == forest_class_id_mask) {
+                    data(i, j) = forest_class_id;
+                }
+            }
+
+        } else if (urban_index != -1) {
+            // Transforming everything in urban area
+            for (int j = urban_index; j < nyear; j++) {
+                data(i, j) = urban_class_id;
+            }
+        }
+    }
+
+    return data;
+}
+
+

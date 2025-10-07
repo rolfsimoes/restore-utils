@@ -46,7 +46,7 @@ load_terraclass_2004 <- function(version = "v1", multicores = 32, memsize = 120)
                        "96" = "FLORESTA",
                        "97" = "DESFLORESTAMENTO_2004",
                        "98" = "URBANIZADA", # original label was AREA_URBANA
-                       "99"   = "AREA_NAO_OBSERVADA"
+                       "99" = "AREA_NAO_OBSERVADA"
             )
         )
 

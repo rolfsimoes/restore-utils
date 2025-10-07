@@ -66,12 +66,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_trajectory_urban_analysis
+NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask, int urban_class_id, int forest_class_id, int forest_class_id_mask);
+RcppExport SEXP _restoreutils_C_trajectory_urban_analysis(SEXP dataSEXP, SEXP maskSEXP, SEXP urban_class_idSEXP, SEXP forest_class_idSEXP, SEXP forest_class_id_maskSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mask(maskSEXP);
+    Rcpp::traits::input_parameter< int >::type urban_class_id(urban_class_idSEXP);
+    Rcpp::traits::input_parameter< int >::type forest_class_id(forest_class_idSEXP);
+    Rcpp::traits::input_parameter< int >::type forest_class_id_mask(forest_class_id_maskSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_urban_analysis(data, mask, urban_class_id, forest_class_id, forest_class_id_mask));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_context_cleaner", (DL_FUNC) &_restoreutils_C_context_cleaner, 7},
     {"_restoreutils_C_remap_values", (DL_FUNC) &_restoreutils_C_remap_values, 3},
     {"_restoreutils_C_trajectory_transition_analysis", (DL_FUNC) &_restoreutils_C_trajectory_transition_analysis, 3},
     {"_restoreutils_C_trajectory_neighbor_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_analysis, 3},
+    {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
     {NULL, NULL, 0}
 };
 
