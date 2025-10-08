@@ -62,6 +62,63 @@ NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_c
 
 
 // [[Rcpp::export]]
+NumericMatrix C_trajectory_neighbor_consistency_analysis(NumericMatrix data, int reference_class) {
+    // This rule was originally implemented to:
+    // > "Se tem agr anual, qualquer classe, agr anual, vira agr anual (2ciclos)"
+
+    int npixel = data.nrow();
+    int nyear = data.ncol();
+
+    if (nyear < 3) {
+        stop("Expected at least 3 years (columns), but got " + std::to_string(nyear));
+    }
+
+    for (int i = 0; i < npixel; i++) {
+        // remove edges (start: j = 1; end = j - 1)
+        for (int j = 1; j < nyear - 1; j++) {
+            bool is_left_valid = data(i, j - 1)  == reference_class;
+            bool is_right_valid = data(i, j + 1) == reference_class;
+
+            bool is_middle_invalid = data(i, j)  != reference_class;
+
+            if (is_left_valid && is_right_valid && is_middle_invalid) {
+                data(i, j) = reference_class;
+            }
+        }
+    }
+
+    return data;
+}
+
+// [[Rcpp::export]]
+NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int reference_class) {
+    // This rule was originally implemented to:
+    // > "Se temos classe x, ag anual (2ciclos), classe x, o valor do meio (ag anual), vira classe x"
+
+    int npixel = data.nrow();
+    int nyear = data.ncol();
+
+    if (nyear < 3) {
+        stop("Expected at least 3 years (columns), but got " + std::to_string(nyear));
+    }
+
+    for (int i = 0; i < npixel; i++) {
+        // remove edges (start: j = 1; end = j - 1)
+        for (int j = 1; j < nyear - 1; j++) {
+
+            bool is_left_equal_to_right = data(i, j - 1) == data(i, j + 1);
+            bool is_middle_valid = data(i, j) == reference_class;
+
+            if (is_left_equal_to_right && is_middle_valid) {
+                data(i, j) = data(i, j - 1);
+            }
+        }
+    }
+
+    return data;
+}
+
+// [[Rcpp::export]]
 NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask, int urban_class_id, int forest_class_id, int forest_class_id_mask) {
     int npixel = data.nrow();
     int nyear = data.ncol();
@@ -73,8 +130,14 @@ NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask
 
         // Looking for urban in the series
         for (int j = 0; j < nyear; j++) {
+            if (urban_index != -1) {
+                break;
+            }
+
             if (data(i, j) == urban_class_id) {
                 urban_index = j;
+
+                break;
             }
         }
 
@@ -135,5 +198,3 @@ NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask
 
     return data;
 }
-
-

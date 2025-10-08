@@ -17,6 +17,14 @@ C_trajectory_neighbor_analysis <- function(data, reference_class, replacement_cl
     .Call(`_restoreutils_C_trajectory_neighbor_analysis`, data, reference_class, replacement_class)
 }
 
+C_trajectory_neighbor_consistency_analysis <- function(data, reference_class) {
+    .Call(`_restoreutils_C_trajectory_neighbor_consistency_analysis`, data, reference_class)
+}
+
+C_trajectory_neighbor_majority_analysis <- function(data, reference_class) {
+    .Call(`_restoreutils_C_trajectory_neighbor_majority_analysis`, data, reference_class)
+}
+
 C_trajectory_urban_analysis <- function(data, mask, urban_class_id, forest_class_id, forest_class_id_mask) {
     .Call(`_restoreutils_C_trajectory_urban_analysis`, data, mask, urban_class_id, forest_class_id, forest_class_id_mask)
 }
