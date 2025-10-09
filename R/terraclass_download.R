@@ -34,11 +34,12 @@
     fs::path_file(tc_year_file[["file"]])
 }
 
-.terraclass_file_sits_name <- function(year, ext) {
-    template <- "LANDSAT_TM-ETM-OLI_MOSAIC_XYZ-01-01_XYZ-12-31_class_v1.EXT"
+.terraclass_file_sits_name <- function(year, ext, version = "v1") {
+    template <- "LANDSAT_TM-ETM-OLI_MOSAIC_XYZ-01-01_XYZ-12-31_class_VERSION.EXT"
 
     stringr::str_replace_all(template, "XYZ", as.character(year)) |>
-        stringr::str_replace("EXT", ext)
+        stringr::str_replace("EXT", ext) |>
+        stringr::str_replace("VERSION", version)
 }
 
 .terraclass_download <- function(year, output_dir) {
@@ -130,12 +131,12 @@ download_terraclass <- function(year, output_dir, version = "v1") {
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, version = "v1") {
+prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
     # Download all specified years
-    furrr::future_map(years, function(year) {
+    extracted_files <- furrr::future_map_dfr(years, function(year) {
         # Set timeout
         withr::local_options(timeout = timeout)
 
@@ -205,8 +206,110 @@ prepare_terraclass <- function(years, region_id, multicores = 1, timeout = 720, 
         }
 
         # Return!
-        dplyr::select(extracted_files, -.data[["processed"]])
+        dplyr::select(extracted_files, -.data[["processed"]]) |>
+            dplyr::mutate(year = !!year)
     },
         .options = furrr::furrr_options(seed = TRUE)
     )
+
+    if (fix_urban_area) {
+        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+
+        # Sorting years
+        sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
+
+        purrr::map(seq(2, length(sorted_years)), function(year_idx) {
+            # Define year
+            current_year <- sorted_years[year_idx]
+            previous_year <- sorted_years[year_idx - 1]
+
+            # Define output dir
+            output_dir <- .terraclass_dir(year = current_year, version = version)
+
+            # Creating cube
+            current_cube <- get(paste0("load_terraclass_", current_year))
+            current_cube <- current_cube(
+                memsize = memsize, multicores = multicores
+            )
+
+            # Creating mask
+            mask <- get(paste0("load_terraclass_", previous_year))
+            mask <- mask(
+                memsize = memsize, multicores = multicores
+            )
+
+            reclassified_cube <- sits::sits_reclassify(
+                cube = current_cube,
+                mask = mask,
+                rules = list(
+                    "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
+                ),
+                memsize = memsize,
+                multicores = multicores,
+                output_dir = output_dir,
+                version = "v2-mask"
+            )
+
+            fs::file_move(
+                path = reclassified_cube[["file_info"]][[1]][["path"]],
+                new_path = current_cube[["file_info"]][[1]][["path"]]
+            )
+        })
+    }
+
 }
+
+
+paths <- c(
+    "data/derived/masks/base/terraclass/v1/2020/LANDSAT_TM-ETM-OLI_MOSAIC_2020-01-01_2020-12-31_class_v1.tif",
+    "data/derived/masks/base/terraclass/v1/2022/LANDSAT_TM-ETM-OLI_MOSAIC_2022-01-01_2022-12-31_class_v1.tif"
+)
+
+extracted_files <- tibble::tibble(
+    file      = paths,
+    type      = c("raster", "raster"),
+    year      = c(2020, 2022),
+    processed = c(TRUE, TRUE)
+)
+
+
+sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
+
+purrr::map(seq(2, length(sorted_years)), function(year_idx) {
+    # Define year
+    current_year <- sorted_years[year_idx]
+    previous_year <- sorted_years[year_idx - 1]
+
+    # Define output dir
+    output_dir <- .terraclass_dir(year = current_year, version = version)
+
+    # Creating cube
+    current_cube <- get(paste0("load_terraclass_", current_year))
+    current_cube <- current_cube(
+        memsize = memsize, multicores = multicores
+    )
+
+    # Creating mask
+    mask <- get(paste0("load_terraclass_", previous_year))
+    mask <- mask(
+        memsize = memsize, multicores = multicores
+    )
+
+    reclassified_cube <- sits::sits_reclassify(
+        cube = current_cube,
+        mask = mask,
+        rules = list(
+            "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
+        ),
+        memsize = memsize,
+        multicores = multicores,
+        output_dir = output_dir,
+        version = "v2-mask"
+    )
+
+    fs::file_move(
+        path = reclassified_cube[["file_info"]][[1]][["path"]],
+        new_path = current_cube[["file_info"]][[1]][["path"]]
+    )
+})
+
