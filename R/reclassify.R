@@ -912,6 +912,23 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
     return(out_file)
 }
 
+#' @export
+reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, multicores, memsize, output_dir, version) {
+    sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "pasture_deforestation_in_nonforest" = (
+                mask == "DeforestationInNonForest" &
+                cube %in% c("Seasonally_Flooded_ICS", "Wetland_ICS")
+            )
+        ),
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
 
 #' @export
 reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
