@@ -777,7 +777,8 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
         cube = cube,
         mask = mask,
         rules = list(
-            "pasture_annual_agriculture" = mask == "URBANIZADA" & cube == "2ciclos"
+            # "Nao-urbano" vem da máscara modificada do terraclass
+            "pasture_annual_agriculture" = mask == "NAO-URBANO" & cube == "2ciclos"
         ),
         multicores = multicores,
         memsize = memsize,
