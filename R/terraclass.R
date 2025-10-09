@@ -90,7 +90,8 @@ load_terraclass_2008 <- function(version = "v1", multicores = 32, memsize = 120)
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
                        "50" = "NAO FLORESTA",
-                       "52" = "CULTURA AGRICOLA TEMPORARIA"
+                       "52" = "CULTURA AGRICOLA TEMPORARIA",
+                       "53" = "NAO-URBANO"
             )
         )
 
@@ -134,7 +135,8 @@ load_terraclass_2012 <- function(version = "v1", multicores = 32, memsize = 120)
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
                        "50" = "NAO FLORESTA",
-                       "52" = "CULTURA AGRICOLA TEMPORARIA"
+                       "52" = "CULTURA AGRICOLA TEMPORARIA",
+                       "53" = "NAO-URBANO"
             )
         )
 
@@ -178,7 +180,8 @@ load_terraclass_2010 <- function(version = "v1", multicores = 32, memsize = 120)
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
                        "50" = "NAO FLORESTA",
-                       "52" = "CULTURA AGRICOLA TEMPORARIA"
+                       "52" = "CULTURA AGRICOLA TEMPORARIA",
+                       "53" = "NAO-URBANO"
             )
         )
 
@@ -222,7 +225,8 @@ load_terraclass_2014 <- function(version = "v1", multicores = 32, memsize = 120)
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
                        "50" = "NAO FLORESTA",
-                       "52" = "CULTURA AGRICOLA TEMPORARIA"
+                       "52" = "CULTURA AGRICOLA TEMPORARIA",
+                       "53" = "NAO-URBANO"
             )
         )
 
@@ -267,7 +271,8 @@ load_terraclass_2018 <- function(version = "v1", multicores = 32, memsize = 120)
                        "22" = "DESFLORESTAMENTO NO ANO",
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
-                       "51" = "NAO FLORESTA"
+                       "51" = "NAO FLORESTA",
+                       "52" = "NAO-URBANO"
             )
         )
 
@@ -313,7 +318,8 @@ load_terraclass_2020 <- function(version = "v1", multicores = 32, memsize = 120)
                        "22" = "DESFLORESTAMENTO NO ANO",
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
-                       "51" = "NAO FLORESTA"
+                       "51" = "NAO FLORESTA",
+                       "52" = "NAO-URBANO"
             )
         )
 
