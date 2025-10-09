@@ -21,7 +21,7 @@ load_terraclass_2004 <- function(version = "v1", multicores = 32, memsize = 120)
     } else {
         # We decided to maintain the original labels name because we only
         # used MINERACAO and URBANIZADA classes, so, we just harmonized both.
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -66,7 +66,7 @@ load_terraclass_2008 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -110,7 +110,7 @@ load_terraclass_2012 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -154,7 +154,7 @@ load_terraclass_2010 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -198,7 +198,7 @@ load_terraclass_2014 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -242,7 +242,7 @@ load_terraclass_2018 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
@@ -288,7 +288,7 @@ load_terraclass_2020 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass_2020 <- sits_cube(
+        terraclass_2020 <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir_2020,
@@ -333,7 +333,7 @@ load_terraclass_2022 <- function(version = "v1", multicores = 32, memsize = 120)
 
     } else {
 
-        terraclass <- sits_cube(
+        terraclass <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = terraclass_dir,
