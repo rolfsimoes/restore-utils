@@ -132,11 +132,8 @@ download_terraclass <- function(year, output_dir, version = "v1") {
 
 #' @export
 prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
-    # Setup multisession workers
-    future::plan(future::multisession, workers = multicores)
-
     # Download all specified years
-    extracted_files <- furrr::future_map_dfr(years, function(year) {
+    extracted_files <- purrr::map_dfr(years, function(year) {
         # Set timeout
         withr::local_options(timeout = timeout)
 
@@ -208,9 +205,7 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         # Return!
         dplyr::select(extracted_files, -.data[["processed"]]) |>
             dplyr::mutate(year = !!year)
-    },
-        .options = furrr::furrr_options(seed = TRUE)
-    )
+    })
 
     # Fix urban area
     if (fix_urban_area) {
