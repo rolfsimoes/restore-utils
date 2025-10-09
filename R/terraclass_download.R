@@ -131,7 +131,7 @@ download_terraclass <- function(year, output_dir, version = "v1") {
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
+prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
@@ -212,6 +212,62 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, memsize 
         .options = furrr::furrr_options(seed = TRUE)
     )
 
+    # Fix non Forest
+    if (fix_non_forest) {
+        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+        years_to_apply <- c(2008, 2010, 2012, 2014)
+
+        tc_2014 <- load_terraclass_2014(multicores = multicores, memsize = memsize)
+        tc_2018 <- load_terraclass_2018(multicores = multicores, memsize = memsize)
+
+        # Define output dir
+        output_dir_temp <- .terraclass_dir(year = 2018, version = "non-forest")
+
+        # Define output dir
+        temp_cube <- sits::sits_reclassify(
+            cube = tc_2018,
+            mask = tc_2014,
+            rules = list(
+                "URBANIZADA-NON-FOREST" = cube == "URBANIZADA" & mask == "NAO FLORESTA"
+            ),
+            memsize = memsize,
+            multicores = multicores,
+            output_dir = output_dir_temp,
+            version = "temp-mask"
+        )
+
+        purrr::map(years_to_apply, function(year_to_apply) {
+            # Define output dir
+            output_dir <- .terraclass_dir(year = year_to_apply, version = version)
+
+            # Creating cube
+            current_cube <- get(paste0("load_terraclass_", year_to_apply))
+            current_cube <- current_cube(
+                memsize = memsize, multicores = multicores
+            )
+
+            reclassified_cube <- sits::sits_reclassify(
+                cube = current_cube,
+                mask = temp_cube,
+                rules = list(
+                    "URBANIZADA" = cube == "URBANIZADA" | mask == "URBANIZADA-NON-FOREST"
+                ),
+                memsize = memsize,
+                multicores = multicores,
+                output_dir = output_dir,
+                version = "v2-mask"
+            )
+
+            fs::file_move(
+                path = reclassified_cube[["file_info"]][[1]][["path"]],
+                new_path = current_cube[["file_info"]][[1]][["path"]]
+            )
+        })
+        # Delete temporary directory
+        fs::dir_delete(output_dir_temp)
+    }
+
+    # Fix urban area
     if (fix_urban_area) {
         stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
 
@@ -242,7 +298,7 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, memsize 
                 cube = current_cube,
                 mask = mask,
                 rules = list(
-                    "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
+                    "NAO-URBANO" = cube == "URBANIZADA" & mask != "URBANIZADA"
                 ),
                 memsize = memsize,
                 multicores = multicores,
@@ -272,7 +328,6 @@ extracted_files <- tibble::tibble(
     processed = c(TRUE, TRUE)
 )
 
-
 sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
 
 purrr::map(seq(2, length(sorted_years)), function(year_idx) {
@@ -286,13 +341,13 @@ purrr::map(seq(2, length(sorted_years)), function(year_idx) {
     # Creating cube
     current_cube <- get(paste0("load_terraclass_", current_year))
     current_cube <- current_cube(
-        memsize = memsize, multicores = multicores
+        memsize = 10, multicores = 12
     )
 
     # Creating mask
     mask <- get(paste0("load_terraclass_", previous_year))
     mask <- mask(
-        memsize = memsize, multicores = multicores
+        memsize = 10, multicores = 12
     )
 
     reclassified_cube <- sits::sits_reclassify(
@@ -301,8 +356,8 @@ purrr::map(seq(2, length(sorted_years)), function(year_idx) {
         rules = list(
             "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
         ),
-        memsize = memsize,
-        multicores = multicores,
+        memsize = 10,
+        multicores = 12,
         output_dir = output_dir,
         version = "v2-mask"
     )
