@@ -267,7 +267,7 @@ load_terraclass_2018 <- function(version = "v1", multicores = 32, memsize = 120)
                        "22" = "DESFLORESTAMENTO NO ANO",
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
-                       "51" = "NATURAL NAO FLORESTAL"
+                       "51" = "NAO FLORESTA"
             )
         )
 
@@ -313,7 +313,7 @@ load_terraclass_2020 <- function(version = "v1", multicores = 32, memsize = 120)
                        "22" = "DESFLORESTAMENTO NO ANO",
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
-                       "51" = "NATURAL NAO FLORESTAL"
+                       "51" = "NAO FLORESTA"
             )
         )
 
@@ -358,7 +358,7 @@ load_terraclass_2022 <- function(version = "v1", multicores = 32, memsize = 120)
                        "22" = "DESFLORESTAMENTO NO ANO",
                        "23" = "CORPO DAGUA",
                        "25" = "NAO OBSERVADO",
-                       "51" = "NATURAL NAO FLORESTAL"
+                       "51" = "NAO FLORESTA"
             )
         )
         saveRDS(terraclass, terraclass_rds)

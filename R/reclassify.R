@@ -254,7 +254,7 @@ reclassify_rule12_non_forest <- function(cube, mask, multicores, memsize, output
         cube = cube,
         mask = mask,
         rules = list(
-            "nat_non_forest" = mask == "NATURAL NAO FLORESTAL"
+            "nat_non_forest" = mask == "NAO FLORESTA"
         ),
         multicores = multicores,
         memsize = memsize,

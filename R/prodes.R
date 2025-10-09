@@ -145,7 +145,6 @@
     meta
 }
 
-
 #' @export
 prodes_generate_mask <- function(target_year,
                                  version = "v2",
@@ -341,7 +340,7 @@ load_prodes_2000 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "Aggregation",
                        "103" = "DeforestationInNonForest"
             )
@@ -394,7 +393,7 @@ load_prodes_2001 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2000",
                        "103" = "d2001",
                        "104" = "DeforestationInNonForest"
@@ -448,7 +447,7 @@ load_prodes_2002 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2001",
                        "103" = "d2002",
                        "104" = "DeforestationInNonForest"
@@ -502,7 +501,7 @@ load_prodes_2003 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2002",
                        "103" = "d2003",
                        "104" = "DeforestationInNonForest"
@@ -556,7 +555,7 @@ load_prodes_2004 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2003",
                        "103" = "d2004",
                        "104" = "DeforestationInNonForest"
@@ -610,7 +609,7 @@ load_prodes_2005 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2004",
                        "103" = "d2005",
                        "104" = "DeforestationInNonForest"
@@ -664,7 +663,7 @@ load_prodes_2006 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2005",
                        "103" = "d2006",
                        "104" = "DeforestationInNonForest"
@@ -718,7 +717,7 @@ load_prodes_2007 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "d2006",
                        "103" = "d2007",
                        "104" = "DeforestationInNonForest"
@@ -778,7 +777,7 @@ load_prodes_2008 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -837,7 +836,7 @@ load_prodes_2009 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -897,7 +896,7 @@ load_prodes_2010 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "91"  = "Hidrografia",
                        "99"  = "Nuvem",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -954,7 +953,7 @@ load_prodes_2011 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1012,7 +1011,7 @@ load_prodes_2012 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1071,7 +1070,7 @@ load_prodes_2013 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1131,7 +1130,7 @@ load_prodes_2014 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1192,7 +1191,7 @@ load_prodes_2015 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1254,7 +1253,7 @@ load_prodes_2016 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1317,7 +1316,7 @@ load_prodes_2017 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1381,7 +1380,7 @@ load_prodes_2018 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1446,7 +1445,7 @@ load_prodes_2019 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1512,7 +1511,7 @@ load_prodes_2020 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1580,7 +1579,7 @@ load_prodes_2021 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1589,7 +1588,6 @@ load_prodes_2021 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     prodes
 }
-
 
 #' @export
 load_prodes_2022 <- function(version = "v2", multicores = 32, memsize = 120) {
@@ -1649,7 +1647,7 @@ load_prodes_2022 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1716,7 +1714,7 @@ load_prodes_2023 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
@@ -1786,7 +1784,7 @@ load_prodes_2024 <- function(version = "v2", multicores = 32, memsize = 120) {
                        "64" = "r2024",
                        "91" = "Hidrografia",
                        "100" = "Vegetação Nativa",
-                       "101" = "Não Floresta",
+                       "101" = "NAO FLORESTA",
                        "102" = "DeforestationInNonForest"
                 )
         )
