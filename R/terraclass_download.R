@@ -131,7 +131,7 @@ download_terraclass <- function(year, output_dir, version = "v1") {
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
+prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
     # Setup multisession workers
     future::plan(future::multisession, workers = multicores)
 
@@ -212,9 +212,56 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_
         .options = furrr::furrr_options(seed = TRUE)
     )
 
+    # Fix urban area
+    if (fix_urban_area) {
+        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+
+        # Sorting years
+        sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
+
+        purrr::map(seq(2, length(sorted_years)), function(year_idx) {
+            # Define year
+            current_year <- sorted_years[year_idx]
+            previous_year <- sorted_years[year_idx - 1]
+
+            # Define output dir
+            output_dir <- .terraclass_dir(year = current_year, version = version)
+
+            # Creating cube
+            current_cube <- get(paste0("load_terraclass_", current_year))
+            current_cube <- current_cube(
+                memsize = memsize, multicores = multicores
+            )
+
+            # Creating mask
+            mask <- get(paste0("load_terraclass_", previous_year))
+            mask <- mask(
+                memsize = memsize, multicores = multicores
+            )
+
+            reclassified_cube <- sits::sits_reclassify(
+                cube = current_cube,
+                mask = mask,
+                rules = list(
+                    "NAO-URBANO" = cube == "URBANIZADA" & mask != "URBANIZADA"
+                ),
+                memsize = memsize,
+                multicores = multicores,
+                output_dir = output_dir,
+                version = "v1-mask-urban-area"
+            )
+
+            fs::file_move(
+                path = reclassified_cube[["file_info"]][[1]][["path"]],
+                new_path = current_cube[["file_info"]][[1]][["path"]]
+            )
+        })
+    }
+
     # Fix non Forest
     if (fix_non_forest) {
         stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+
         years_to_apply <- c(2008, 2010, 2012, 2014)
 
         tc_2014 <- load_terraclass_2014(multicores = multicores, memsize = memsize)
@@ -255,7 +302,7 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_
                 memsize = memsize,
                 multicores = multicores,
                 output_dir = output_dir,
-                version = "v2-mask"
+                version = "v2-mask-non-forest"
             )
 
             fs::file_move(
@@ -267,43 +314,35 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_
         fs::dir_delete(output_dir_temp)
     }
 
-    # Fix urban area
-    if (fix_urban_area) {
-        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+    # Fix other uses
+    if (fix_other_uses) {
+        stopifnot(years %in% c(2014, 2012, 2010, 2008))
 
-        # Sorting years
-        sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
+        # Years to apply
+        years_to_apply <- c(2008, 2010, 2012)
 
-        purrr::map(seq(2, length(sorted_years)), function(year_idx) {
-            # Define year
-            current_year <- sorted_years[year_idx]
-            previous_year <- sorted_years[year_idx - 1]
+        tc_2014 <- load_terraclass_2014(multicores = multicores, memsize = memsize)
 
+        purrr::map(years_to_apply, function(year_to_apply) {
             # Define output dir
-            output_dir <- .terraclass_dir(year = current_year, version = version)
+            output_dir <- .terraclass_dir(year = year_to_apply, version = version)
 
             # Creating cube
-            current_cube <- get(paste0("load_terraclass_", current_year))
+            current_cube <- get(paste0("load_terraclass_", year_to_apply))
             current_cube <- current_cube(
-                memsize = memsize, multicores = multicores
-            )
-
-            # Creating mask
-            mask <- get(paste0("load_terraclass_", previous_year))
-            mask <- mask(
                 memsize = memsize, multicores = multicores
             )
 
             reclassified_cube <- sits::sits_reclassify(
                 cube = current_cube,
-                mask = mask,
+                mask = tc_2014,
                 rules = list(
-                    "NAO-URBANO" = cube == "URBANIZADA" & mask != "URBANIZADA"
+                    "URBANIZADA" = cube == "URBANIZADA" | cube == "OUTROS USOS" & mask == "URBANIZADA"
                 ),
                 memsize = memsize,
                 multicores = multicores,
                 output_dir = output_dir,
-                version = "v2-mask"
+                version = "v3-mask-other-uses"
             )
 
             fs::file_move(
@@ -313,4 +352,5 @@ prepare_terraclass <- function(years, region_id, fix_urban_area = TRUE, fix_non_
         })
     }
 
+    extracted_files
 }
