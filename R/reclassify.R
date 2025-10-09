@@ -770,21 +770,36 @@ reclassify_rule20_temporal_trajectory_urban <- function( files,
     return(file_out)
 }
 
-
 #' @export
-reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
-        cube = cube,
-        mask = mask,
-        rules = list(
-            # "Nao-urbano" vem da máscara modificada do terraclass
-            "pasture_annual_agriculture" = mask == "NAO-URBANO" & cube == "2ciclos"
-        ),
-        multicores = multicores,
-        memsize = memsize,
-        output_dir = output_dir,
-        version = version
-    )
+reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year) {
+    if (rarg_year == 2022) {
+        rules_expression <- bquote(
+            list(
+                # "Nao-urbano" vem da máscara modificada do terraclass
+                "pasture_annual_agriculture" = mask == "URBANIZADA" & cube == "2ciclos"
+            )
+        )
+    } else {
+        rules_expression <- bquote(
+            list(
+                # "Nao-urbano" vem da máscara modificada do terraclass
+                "pasture_annual_agriculture" = mask == "NAO-URBANO" & cube == "2ciclos"
+            )
+        )
+    }
+
+    # reclassify!
+    eval(bquote(
+        sits_reclassify(
+            cube = cube,
+            mask = mask,
+            rules = .(rules_expression),
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir,
+            version = version
+        )
+    ))
 }
 
 #' @export
