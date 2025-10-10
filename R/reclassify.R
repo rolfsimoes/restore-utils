@@ -4,7 +4,7 @@
 
 #' @export
 reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -34,7 +34,7 @@ reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsi
 
     # reclassify!
     eval(bquote(
-        sits_reclassify(
+        sits::sits_reclassify(
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
@@ -68,7 +68,7 @@ reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, ou
 
     # reclassify!
     eval(bquote(
-        sits_reclassify(
+        sits::sits_reclassify(
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
@@ -82,7 +82,7 @@ reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, ou
 
 #' @export
 reclassify_rule4_silviculture <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -97,7 +97,7 @@ reclassify_rule4_silviculture <- function(cube, mask, multicores, memsize, outpu
 
 #' @export
 reclassify_rule5_silviculture_pasture <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -112,7 +112,7 @@ reclassify_rule5_silviculture_pasture <- function(cube, mask, multicores, memsiz
 
 #' @export
 reclassify_rule6_semiperennial <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -127,7 +127,7 @@ reclassify_rule6_semiperennial <- function(cube, mask, multicores, memsize, outp
 
 #' @export
 reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -145,7 +145,7 @@ reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsi
 
 #' @export
 reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -165,7 +165,7 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
 
 #' @export
 reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -184,7 +184,7 @@ reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsi
 
 #' @export
 reclassify_rule9_minning <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -199,7 +199,7 @@ reclassify_rule9_minning <- function(cube, mask, multicores, memsize, output_dir
 
 #' @export
 reclassify_rule10_urban_area <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -214,7 +214,7 @@ reclassify_rule10_urban_area <- function(cube, mask, multicores, memsize, output
 
 #' @export
 reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -232,7 +232,7 @@ reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir,
 
 #' @export
 reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -250,7 +250,7 @@ reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, outp
 
 #' @export
 reclassify_rule12_non_forest <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -520,7 +520,7 @@ reclassify_rule15_urban_area_glad <- function(cube,
                                               memsize,
                                               output_dir,
                                               version) {
-    mask_ref <- sits_reclassify(
+    mask_ref <- sits::sits_reclassify(
         cube = mask,
         mask = reference_mask,
         rules = list(
@@ -532,7 +532,7 @@ reclassify_rule15_urban_area_glad <- function(cube,
         version = paste0(version, "-intermed-reference-mask")
     )
 
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask_ref,
         rules = list(
@@ -547,7 +547,7 @@ reclassify_rule15_urban_area_glad <- function(cube,
 
 #' @export
 reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -565,7 +565,7 @@ reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output
 
 #' @export
 reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -581,7 +581,7 @@ reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize
 
 #' @export
 reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
@@ -622,7 +622,7 @@ reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
 
     # reclassify!
     eval(bquote(
-        sits_reclassify(
+        sits::sits_reclassify(
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
@@ -790,7 +790,7 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
 
     # reclassify!
     eval(bquote(
-        sits_reclassify(
+        sits::sits_reclassify(
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
@@ -930,7 +930,7 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
 
 #' @export
 reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, multicores, memsize, output_dir, version) {
-    sits_reclassify(
+    sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
