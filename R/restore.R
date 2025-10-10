@@ -21,7 +21,7 @@ load_restore_map_bdc <- function(data_dir, multicores = 32, memsize = 120, label
         labels = default_label
     }
 
-    sits_cube(
+    sits::sits_cube(
         source = "BDC",
         collection = "LANDSAT-OLI-16D",
         data_dir = data_dir,
@@ -57,7 +57,7 @@ load_restore_map_glad <- function(data_dir, multicores = 32, memsize = 120, labe
         labels = default_label
     }
 
-    sits_cube(
+    sits::sits_cube(
         source = "BDC",
         collection = "LANDSAT-OLI-16D",
         data_dir = data_dir,

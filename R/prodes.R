@@ -309,7 +309,7 @@ load_prodes_2000 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -362,7 +362,7 @@ load_prodes_2001 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -416,7 +416,7 @@ load_prodes_2002 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -470,7 +470,7 @@ load_prodes_2003 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -524,7 +524,7 @@ load_prodes_2004 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -578,7 +578,7 @@ load_prodes_2005 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -632,7 +632,7 @@ load_prodes_2006 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -686,7 +686,7 @@ load_prodes_2007 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -740,7 +740,7 @@ load_prodes_2008 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -798,7 +798,7 @@ load_prodes_2009 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -857,7 +857,7 @@ load_prodes_2010 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -917,7 +917,7 @@ load_prodes_2011 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -974,7 +974,7 @@ load_prodes_2012 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1032,7 +1032,7 @@ load_prodes_2013 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1091,7 +1091,7 @@ load_prodes_2014 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1151,7 +1151,7 @@ load_prodes_2015 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1212,7 +1212,7 @@ load_prodes_2016 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1274,7 +1274,7 @@ load_prodes_2017 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1337,7 +1337,7 @@ load_prodes_2018 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1401,7 +1401,7 @@ load_prodes_2019 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1466,7 +1466,7 @@ load_prodes_2020 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1533,7 +1533,7 @@ load_prodes_2021 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1600,7 +1600,7 @@ load_prodes_2022 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1666,7 +1666,7 @@ load_prodes_2023 <- function(version = "v2", multicores = 32, memsize = 120) {
         prodes <- readRDS(prodes_rds)
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
@@ -1735,7 +1735,7 @@ load_prodes_2024 <- function(version = "v2", multicores = 32, memsize = 120) {
 
     } else {
         # Recover the PRODES classified cube
-        prodes <- sits_cube(
+        prodes <- sits::sits_cube(
             source = "MPC",
             collection = "LANDSAT-C2-L2",
             data_dir = prodes_dir,
