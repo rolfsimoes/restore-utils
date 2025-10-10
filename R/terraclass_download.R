@@ -209,10 +209,13 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix urban area
     if (fix_urban_area) {
-        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+        # Define valid years
+        valid_years <- c(2022, 2020, 2018, 2014, 2012, 2010, 2008)
+
+        stopifnot(all(valid_years %in% years))
 
         # Sorting years
-        sorted_years <- sort(extracted_files[["year"]], decreasing = TRUE)
+        sorted_years <- sort(valid_years, decreasing = TRUE)
 
         purrr::map(seq(2, length(sorted_years)), function(year_idx) {
             # Define year
@@ -255,7 +258,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix non Forest
     if (fix_non_forest) {
-        stopifnot(years %in% c(2022, 2018, 2014, 2012, 2010, 2008))
+        valid_years <- c(2008, 2010, 2012, 2014, 2018)
+
+        stopifnot(all(valid_years %in% years))
 
         years_to_apply <- c(2008, 2010, 2012, 2014)
 
@@ -311,7 +316,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix other uses
     if (fix_other_uses) {
-        stopifnot(years %in% c(2014, 2012, 2010, 2008))
+        valid_years <- c(2014, 2012, 2010, 2008)
+
+        stopifnot(all(valid_years %in% years))
 
         # Years to apply
         years_to_apply <- c(2008, 2010, 2012)
