@@ -209,6 +209,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix urban area
     if (fix_urban_area) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing urban area")
+
         # Define valid years
         valid_years <- c(2022, 2020, 2018, 2014, 2012, 2010, 2008)
 
@@ -258,6 +261,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix non Forest
     if (fix_non_forest) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing non forest mask")
+
         valid_years <- c(2008, 2010, 2012, 2014, 2018)
 
         stopifnot(all(valid_years %in% years))
@@ -269,6 +275,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
         # Define output dir
         output_dir_temp <- .terraclass_dir(year = 2018, version = "non-forest")
+
+        # Create output directory
+        fs::dir_create(output_dir_temp)
 
         # Define output dir
         temp_cube <- sits::sits_reclassify(
@@ -286,6 +295,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         purrr::map(years_to_apply, function(year_to_apply) {
             # Define output dir
             output_dir <- .terraclass_dir(year = year_to_apply, version = version)
+
+            # Create output dir
+            fs::dir_create(output_dir)
 
             # Creating cube
             current_cube <- get(paste0("load_terraclass_", year_to_apply))
@@ -316,6 +328,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix other uses
     if (fix_other_uses) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing other uses mask")
+
         valid_years <- c(2014, 2012, 2010, 2008)
 
         stopifnot(all(valid_years %in% years))
@@ -328,6 +343,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         purrr::map(years_to_apply, function(year_to_apply) {
             # Define output dir
             output_dir <- .terraclass_dir(year = year_to_apply, version = version)
+
+            # Create output dir
+            fs::dir_create(output_dir)
 
             # Creating cube
             current_cube <- get(paste0("load_terraclass_", year_to_apply))
