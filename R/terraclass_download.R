@@ -276,6 +276,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         # Define output dir
         output_dir_temp <- .terraclass_dir(year = 2018, version = "non-forest")
 
+        # Create output directory
+        fs::dir_create(output_dir_temp)
+
         # Define output dir
         temp_cube <- sits::sits_reclassify(
             cube = tc_2018,
@@ -292,6 +295,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         purrr::map(years_to_apply, function(year_to_apply) {
             # Define output dir
             output_dir <- .terraclass_dir(year = year_to_apply, version = version)
+
+            # Create output dir
+            fs::dir_create(output_dir)
 
             # Creating cube
             current_cube <- get(paste0("load_terraclass_", year_to_apply))
@@ -337,6 +343,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
         purrr::map(years_to_apply, function(year_to_apply) {
             # Define output dir
             output_dir <- .terraclass_dir(year = year_to_apply, version = version)
+
+            # Create output dir
+            fs::dir_create(output_dir)
 
             # Creating cube
             current_cube <- get(paste0("load_terraclass_", year_to_apply))
