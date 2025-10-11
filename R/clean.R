@@ -8,6 +8,8 @@ contextual_cleaner <- function(cube,
                                output_dir,
                                version = "v1",
                                progress = TRUE) {
+    stopifnot(!is.null(target_class))
+    stopifnot(!is.null(mode_class))
     # Overlapping pixels
     overlap <- ceiling(window_size / 2L) - 1L
     # Get block size
