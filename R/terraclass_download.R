@@ -209,6 +209,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix urban area
     if (fix_urban_area) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing urban area")
+
         # Define valid years
         valid_years <- c(2022, 2020, 2018, 2014, 2012, 2010, 2008)
 
@@ -258,6 +261,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix non Forest
     if (fix_non_forest) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing non forest mask")
+
         valid_years <- c(2008, 2010, 2012, 2014, 2018)
 
         stopifnot(all(valid_years %in% years))
@@ -316,6 +322,9 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
 
     # Fix other uses
     if (fix_other_uses) {
+        # Show process information
+        cli::cli_inform("Mask update: Fixing other uses mask")
+
         valid_years <- c(2014, 2012, 2010, 2008)
 
         stopifnot(all(valid_years %in% years))
