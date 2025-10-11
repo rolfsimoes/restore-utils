@@ -2,13 +2,13 @@
 .terraclass_files <- function() {
     files <- c(
         "https://www.dropbox.com/scl/fi/kav1zlvaais3dr9m0x9ov/AMZ.2004.M.zip?rlkey=om48iucml9cpoin7raxc2tgg7&st=x1o5e50a&dl=1",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2008.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2010.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2012.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2014.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2018.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2020.M.zip",
-        "https://www.terraclass.gov.br/helpers/terraclass_data4download_2024/M/amz/AMZ.2022.M.zip"
+        "https://www.dropbox.com/scl/fi/w44ebii8iixe7nzvkils8/AMZ.2008.M.zip?rlkey=pr2rx8wxiflwgb8vk0xjkit9k&st=3ugsl54i&dl=1",
+        "https://www.dropbox.com/scl/fi/t3i44v5zsv175untuquh0/AMZ.2010.M.zip?rlkey=8lntmlz7s7pdvuy7xkukw55my&st=8fmy1txh&dl=1",
+        "https://www.dropbox.com/scl/fi/eyn1txxcz92q6khpwpcan/AMZ.2012.M.zip?rlkey=ldmfc684g7dgpqwir279xy4u2&st=guwx7yt6&dl=1",
+        "https://www.dropbox.com/scl/fi/aiujbpiai56l8zh1vek3d/AMZ.2014.M.zip?rlkey=j6gbs03x297gdiqad0v0fjuz5&st=ba616ggo&dl=1",
+        "https://www.dropbox.com/scl/fi/5ky9t0djzbsqstfaxzjlb/AMZ.2018.M.zip?rlkey=jq697xtk1hu4ignvwna8u7qno&st=k49fj43i&dl=1",
+        "https://www.dropbox.com/scl/fi/du18c061tazxe8aa9qhms/AMZ.2020.M.zip?rlkey=en7gsyavr8g42s2inpzbarmds&st=3441n02c&dl=1",
+        "https://www.dropbox.com/scl/fi/udl9kkakhoj7gct2b34zi/AMZ.2022.M.zip?rlkey=5jpxmzssfqaco4f2q2du24ccq&st=t6e51bg8&dl=1"
     )
 
     tibble::tibble(
