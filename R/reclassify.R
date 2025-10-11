@@ -169,7 +169,7 @@ reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsi
         cube = cube,
         mask = mask,
         rules = list(
-            "2ciclos" = cube == "2ciclos" | cube != "2ciclos" && (mask %in% c(
+            "2ciclos" = cube == "2ciclos" | cube != "2ciclos" & (mask %in% c(
                     "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
                     "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
                     "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
