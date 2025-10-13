@@ -191,9 +191,57 @@ load_terraclass_2010 <- function(version = "v1", multicores = 32, memsize = 120)
 }
 
 #' @export
-load_terraclass_2014 <- function(version = "v1", multicores = 32, memsize = 120) {
+load_terraclass_2014 <- function(version = "v1", multicores = 32, memsize = 120, use_original = FALSE) {
+    # Define default directory
     terraclass_dir <- .terraclass_dir(version, 2014)
+
+    # Define default labels
+    labels_default <- c(
+        "1" = "VEGETACAO NATURAL FLORESTAL PRIMARIA",
+        "2" = "VEGETACAO NATURAL FLORESTAL SECUNDARIA",
+        "9" = "SILVICULTURA",
+        "10" = "PASTAGEM ARBUSTIVA/ARBOREA",
+        "11" = "PASTAGEM HERBACEA",
+        "12" = "CULTURA AGRICOLA PERENE",
+        "13" = "CULTURA AGRICOLA SEMIPERENE",
+        "16" = "MINERACAO",
+        "17" = "URBANIZADA",
+        "20" = "OUTROS USOS",
+        "22" = "DESFLORESTAMENTO NO ANO",
+        "23" = "CORPO DAGUA",
+        "25" = "NAO OBSERVADO",
+        "50" = "NAO FLORESTA",
+        "52" = "CULTURA AGRICOLA TEMPORARIA",
+        "53" = "NAO-URBANO"
+    )
+
+    if (use_original) {
+        # Define original directory
+        terraclass_dir <- .terraclass_dir("original", 2014)
+
+        # Define default labels
+        labels_default <- c(
+            "1" = "VEGETACAO NATURAL FLORESTAL PRIMARIA",
+            "2" = "VEGETACAO NATURAL FLORESTAL SECUNDARIA",
+            "9" = "SILVICULTURA",
+            "10" = "PASTAGEM ARBUSTIVA/ARBOREA",
+            "11" = "PASTAGEM HERBACEA",
+            "12" = "CULTURA AGRICOLA PERENE",
+            "13" = "CULTURA AGRICOLA SEMIPERENE",
+            "16" = "MINERACAO",
+            "17" = "URBANIZADA",
+            "20" = "OUTROS USOS",
+            "22" = "DESFLORESTAMENTO NO ANO",
+            "23" = "CORPO DAGUA",
+            "25" = "NAO OBSERVADO",
+            "50" = "NAO FLORESTA",
+            "52" = "CULTURA AGRICOLA TEMPORARIA"
+        )
+    }
+
+    # Define RDS file
     terraclass_rds <- .terraclass_rds(terraclass_dir)
+
 
     if (fs::file_exists(terraclass_rds)) {
 
@@ -210,24 +258,8 @@ load_terraclass_2014 <- function(version = "v1", multicores = 32, memsize = 120)
             parse_info = c("satellite", "sensor",
                            "tile", "start_date", "end_date",
                            "band", "version"),
-            bands = "class",
-            labels = c("1" = "VEGETACAO NATURAL FLORESTAL PRIMARIA",
-                       "2" = "VEGETACAO NATURAL FLORESTAL SECUNDARIA",
-                       "9" = "SILVICULTURA",
-                       "10" = "PASTAGEM ARBUSTIVA/ARBOREA",
-                       "11" = "PASTAGEM HERBACEA",
-                       "12" = "CULTURA AGRICOLA PERENE",
-                       "13" = "CULTURA AGRICOLA SEMIPERENE",
-                       "16" = "MINERACAO",
-                       "17" = "URBANIZADA",
-                       "20" = "OUTROS USOS",
-                       "22" = "DESFLORESTAMENTO NO ANO",
-                       "23" = "CORPO DAGUA",
-                       "25" = "NAO OBSERVADO",
-                       "50" = "NAO FLORESTA",
-                       "52" = "CULTURA AGRICOLA TEMPORARIA",
-                       "53" = "NAO-URBANO"
-            )
+            bands  = "class",
+            labels = labels_default
         )
 
         saveRDS(terraclass, terraclass_rds)
