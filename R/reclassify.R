@@ -61,7 +61,7 @@ reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, ou
         list(
             "Pasture_Wetland" = (
                 cube %in% c("Seasonally_Flooded_ICS", "Wetland_ICS") &
-                mask %in% .(deforestation_years)
+                    mask %in% .(deforestation_years)
             )
         )
     )
@@ -132,9 +132,9 @@ reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsi
         mask = mask,
         rules = list(
             "pasto_semiperene" = cube == "Agr. Semiperene" &
-                                !(mask %in% c("CULTURA AGRICOLA SEMIPERENE",
-                                              "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
-                                              "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO"))
+                !(mask %in% c("CULTURA AGRICOLA SEMIPERENE",
+                              "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
+                              "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO"))
         ),
         multicores = multicores,
         memsize = memsize,
@@ -150,11 +150,11 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
         mask = mask,
         rules = list(
             "2ciclos" = cube == "2ciclos"  |
-                        (cube == "Agr. Semiperene" & mask %in% c(
-                            "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
-                            "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
-                            "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
-                        ))
+                (cube == "Agr. Semiperene" & mask %in% c(
+                    "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
+                    "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
+                    "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
+                ))
         ),
         multicores = multicores,
         memsize = memsize,
@@ -170,10 +170,10 @@ reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsi
         mask = mask,
         rules = list(
             "2ciclos" = cube == "2ciclos" | cube != "2ciclos" & (mask %in% c(
-                    "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
-                    "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
-                    "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
-                ))
+                "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
+                "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO",
+                "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
+            ))
         ),
         multicores = multicores,
         memsize = memsize,
@@ -219,7 +219,7 @@ reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir,
         mask = mask,
         rules = list(
             "agua" = (
-                    mask == "CORPO DAGUA" &
+                mask == "CORPO DAGUA" &
                     !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
             )
         ),
@@ -265,12 +265,12 @@ reclassify_rule12_non_forest <- function(cube, mask, multicores, memsize, output
 
 #' @export
 reclassify_rule13_temporal_trajectory_perene <- function(files,
-                                              perene_class_id,
-                                              vs_class_id,
-                                              version,
-                                              multicores,
-                                              memsize,
-                                              output_dir) {
+                                                         perene_class_id,
+                                                         vs_class_id,
+                                                         version,
+                                                         multicores,
+                                                         memsize,
+                                                         output_dir) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -392,12 +392,12 @@ reclassify_rule13_temporal_trajectory_perene <- function(files,
 
 #' @export
 reclassify_rule14_temporal_neighbor_perene <- function(files,
-                                            perene_class_id,
-                                            replacement_class_id,
-                                            version,
-                                            multicores,
-                                            memsize,
-                                            output_dir) {
+                                                       perene_class_id,
+                                                       replacement_class_id,
+                                                       version,
+                                                       multicores,
+                                                       memsize,
+                                                       output_dir) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -782,7 +782,8 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
         rules_expression <- bquote(
             list(
                 # "Nao-urbano" vem da máscara modificada do terraclass
-                "pasture_annual_agriculture" = mask == "NAO-URBANO" & cube == "2ciclos"
+                # Blending urbanizada with NAO-URBANO we got the original Urbanizada
+                "pasture_annual_agriculture" = mask %in% c("URBANIZADA", "NAO-URBANO") & cube == "2ciclos"
             )
         )
     }
@@ -803,11 +804,11 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
 
 #' @export
 reclassify_rule22_temporal_annual_agriculture <- function(files,
-                                                         annual_agriculture_class_id,
-                                                         version,
-                                                         multicores,
-                                                         memsize,
-                                                         output_dir) {
+                                                          annual_agriculture_class_id,
+                                                          version,
+                                                          multicores,
+                                                          memsize,
+                                                          output_dir) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -935,7 +936,7 @@ reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, mul
         rules = list(
             "pasture_deforestation_in_nonforest" = (
                 mask == "DeforestationInNonForest" &
-                cube %in% c("Seasonally_Flooded_ICS", "Wetland_ICS")
+                    cube %in% c("Seasonally_Flooded_ICS", "Wetland_ICS")
             )
         ),
         multicores = multicores,
