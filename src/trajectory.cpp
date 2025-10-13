@@ -32,7 +32,6 @@ NumericMatrix C_trajectory_transition_analysis(NumericMatrix data, int reference
     return data;
 }
 
-
 // [[Rcpp::export]]
 NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_class, int replacement_class) {
     int npixel = data.nrow();
@@ -59,7 +58,6 @@ NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_c
 
     return data;
 }
-
 
 // [[Rcpp::export]]
 NumericMatrix C_trajectory_neighbor_consistency_analysis(NumericMatrix data, int reference_class) {
@@ -112,6 +110,25 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
             if (is_left_equal_to_right && is_middle_valid) {
                 data(i, j) = data(i, j - 1);
             }
+        }
+    }
+
+    return data;
+}
+
+// [[Rcpp::export]]
+NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class) {
+    int npixel = data.nrow();
+    int nyear = data.ncol();
+
+    for (int i = 0; i < npixel; i++) {
+        bool is_left_water   = data(i, 0) == water_class;
+        bool is_middle_water = data(i, 1) == water_class;
+        bool is_right_water  = data(i, 2) == water_class;
+
+        if (is_middle_water && (!is_left_water || !is_right_water)) {
+            // If middle is water, change to the first class.
+            data(i, 1) = data(i, 0);
         }
     }
 
