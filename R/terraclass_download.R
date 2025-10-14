@@ -131,7 +131,7 @@ download_terraclass <- function(year, output_dir, version = "v1") {
 }
 
 #' @export
-prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1") {
+prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urban_area = TRUE, fix_non_forest = TRUE, memsize = 8, multicores = 1, timeout = 720, version = "v1", exclude_mask_na = FALSE) {
     # Download all specified years
     extracted_files <- purrr::map_dfr(years, function(year) {
         # Set timeout
@@ -249,6 +249,7 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
                 memsize = memsize,
                 multicores = multicores,
                 output_dir = output_dir,
+                exclude_mask_na = exclude_mask_na,
                 version = "v1-mask-urban-area"
             )
 
@@ -289,6 +290,7 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
             memsize = memsize,
             multicores = multicores,
             output_dir = output_dir_temp,
+            exclude_mask_na = exclude_mask_na,
             version = "temp-mask"
         )
 
@@ -314,6 +316,7 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
                 memsize = memsize,
                 multicores = multicores,
                 output_dir = output_dir,
+                exclude_mask_na = exclude_mask_na,
                 version = "v2-mask-non-forest"
             )
 
@@ -362,6 +365,7 @@ prepare_terraclass <- function(years, region_id, fix_other_uses = TRUE, fix_urba
                 memsize = memsize,
                 multicores = multicores,
                 output_dir = output_dir,
+                exclude_mask_na = exclude_mask_na,
                 version = "v3-mask-other-uses"
             )
 

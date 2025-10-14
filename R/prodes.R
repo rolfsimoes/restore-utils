@@ -151,6 +151,7 @@ prodes_generate_mask <- function(target_year,
                                  multicores = 32,
                                  memsize = 120,
                                  prodes_loader = NULL,
+                                 exclude_mask_na = FALSE,
                                  nonforest_mask = FALSE) {
     if (target_year >= 2024) {
         cli::cli_abort(
@@ -211,6 +212,7 @@ prodes_generate_mask <- function(target_year,
                 multicores = multicores,
                 memsize    = memsize,
                 output_dir = output_dir,
+                exclude_mask_na = exclude_mask_na,
                 version    = "v1"
             )
         ))
@@ -273,6 +275,7 @@ prodes_generate_mask <- function(target_year,
                 multicores = multicores,
                 memsize    = memsize,
                 output_dir = output_dir,
+                exclude_mask_na = exclude_mask_na,
                 version    = "nonforest-mask"
             )
         ))
