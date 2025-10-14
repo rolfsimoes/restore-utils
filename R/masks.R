@@ -69,4 +69,6 @@ prepare_water_mask <- function(region_id, reference_year = 2020, multicores = 36
     system(
         sprintf("gdal_edit.py %s -a_nodata 0", output_file)
     )
+
+    sf::gdal_addo(output_file)
 }
