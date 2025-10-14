@@ -59,14 +59,14 @@ prepare_water_mask <- function(region_id, reference_year = 2020, multicores = 36
     )
 
     system(
-        sprintf("gdal_edit %s -unsetnodata -offset 0 -scale 1", output_file)
+        sprintf("gdal_edit.py %s -unsetnodata -offset 0 -scale 1", output_file)
     )
 
     system(
-        sprintf("gdal_calc -A %s --calc='A==255' --outfile=%s", output_file, output_file)
+        sprintf("gdal_calc.py -A %s --calc='A==255' --outfile=%s", output_file, output_file)
     )
 
     system(
-        sprintf("gdal_edit %s -a_nodata 0", output_file)
+        sprintf("gdal_edit.py %s -a_nodata 0", output_file)
     )
 }
