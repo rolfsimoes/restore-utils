@@ -3,7 +3,7 @@
 }
 
 #' @export
-reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -12,6 +12,7 @@ reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsiz
                 cube %in% c("Forest", "Riparian_Forest", "Mountainside_Forest") &
                 mask != "Vegetação Nativa"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -20,7 +21,7 @@ reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsiz
 }
 
 #' @export
-reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year) {
+reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year, exclude_mask_na = FALSE) {
     # build args for expression
     deforestation_year <- paste0("d", rarg_year)
 
@@ -38,6 +39,7 @@ reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsi
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
+            exclude_mask_na = exclude_mask_na,
             multicores = multicores,
             memsize = memsize,
             output_dir = output_dir,
@@ -47,7 +49,7 @@ reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsi
 }
 
 #' @export
-reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year) {
+reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year, exclude_mask_na = FALSE) {
     # build args for expression
     residuals_years <- c()
     if (rarg_year >= 2010) {
@@ -72,6 +74,7 @@ reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, ou
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
+            exclude_mask_na = exclude_mask_na,
             multicores = multicores,
             memsize = memsize,
             output_dir = output_dir,
@@ -81,13 +84,14 @@ reclassify_rule3_pasture_wetland <- function(cube, mask, multicores, memsize, ou
 }
 
 #' @export
-reclassify_rule4_silviculture <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule4_silviculture <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "Silvicultura" = cube == "Silvicultura" | mask == "SILVICULTURA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -96,13 +100,14 @@ reclassify_rule4_silviculture <- function(cube, mask, multicores, memsize, outpu
 }
 
 #' @export
-reclassify_rule5_silviculture_pasture <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule5_silviculture_pasture <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "pasto_silvicultura" = cube == "Silvicultura" & mask != "SILVICULTURA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -111,13 +116,14 @@ reclassify_rule5_silviculture_pasture <- function(cube, mask, multicores, memsiz
 }
 
 #' @export
-reclassify_rule6_semiperennial <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule6_semiperennial <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "Agr. Semiperene" = cube == "Agr. Semiperene" | mask == "CULTURA AGRICOLA SEMIPERENE"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -126,7 +132,7 @@ reclassify_rule6_semiperennial <- function(cube, mask, multicores, memsize, outp
 }
 
 #' @export
-reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -136,6 +142,7 @@ reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsi
                               "CULTURA AGRICOLA TEMPORARIA DE 1 CICLO",
                               "CULTURA AGRICOLA TEMPORARIA DE MAIS DE 1 CICLO"))
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -144,7 +151,7 @@ reclassify_rule7_semiperennial_pasture <- function(cube, mask, multicores, memsi
 }
 
 #' @export
-reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -156,6 +163,7 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
                     "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
                 ))
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -164,7 +172,7 @@ reclassify_rule8_annual_agriculture <- function(cube, mask, multicores, memsize,
 }
 
 #' @export
-reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -175,6 +183,7 @@ reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsi
                 "CULTURA AGRICOLA TEMPORARIA" # terraclass 2008, 2010
             ))
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -183,13 +192,14 @@ reclassify_rule8_annual_agriculture_v2 <- function(cube, mask, multicores, memsi
 }
 
 #' @export
-reclassify_rule9_minning <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule9_minning <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "mineracao" = mask == "MINERACAO"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -198,13 +208,14 @@ reclassify_rule9_minning <- function(cube, mask, multicores, memsize, output_dir
 }
 
 #' @export
-reclassify_rule10_urban_area <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule10_urban_area <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "area_urbanizada" = mask == "URBANIZADA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -213,7 +224,7 @@ reclassify_rule10_urban_area <- function(cube, mask, multicores, memsize, output
 }
 
 #' @export
-reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -223,6 +234,7 @@ reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir,
                     !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
             )
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -231,7 +243,7 @@ reclassify_rule11_water <- function(cube, mask, multicores, memsize, output_dir,
 }
 
 #' @export
-reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -241,6 +253,7 @@ reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, outp
                     !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
             )
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -249,13 +262,14 @@ reclassify_rule11_water_prodes <- function(cube, mask, multicores, memsize, outp
 }
 
 #' @export
-reclassify_rule12_non_forest <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule12_non_forest <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
         rules = list(
             "nat_non_forest" = mask == "NAO FLORESTA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -519,13 +533,15 @@ reclassify_rule15_urban_area_glad <- function(cube,
                                               multicores,
                                               memsize,
                                               output_dir,
-                                              version) {
+                                              version,
+                                              exclude_mask_na = FALSE) {
     mask_ref <- sits::sits_reclassify(
         cube = mask,
         mask = reference_mask,
         rules = list(
             "URBANIZADA" = cube == "URBANIZADA" & mask == "URBANIZADA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -538,6 +554,7 @@ reclassify_rule15_urban_area_glad <- function(cube,
         rules = list(
             "area_urbanizada" = mask == "URBANIZADA"
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -546,7 +563,7 @@ reclassify_rule15_urban_area_glad <- function(cube,
 }
 
 #' @export
-reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -556,6 +573,7 @@ reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output
                     !cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS")
             )
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -564,7 +582,7 @@ reclassify_rule16_water_glad <- function(cube, mask, multicores, memsize, output
 }
 
 #' @export
-reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -572,6 +590,7 @@ reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize
             "pasto_semiperene_2" = cube == "Agr. Semiperene" &
                 mask != "CULTURA AGRICOLA SEMIPERENE" # TC 2008
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -580,7 +599,7 @@ reclassify_rule17_semiperennial_glad <- function(cube, mask, multicores, memsize
 }
 
 #' @export
-reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -588,6 +607,7 @@ reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, me
             "2ciclos" = cube == "2ciclos" | cube == "pasto_semiperene_2" &
                 mask %in% c("AGRICULTURA_ANUAL", "CULTURA AGRICOLA TEMPORARIA")
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
@@ -597,7 +617,8 @@ reclassify_rule18_annual_agriculture_glad <- function(cube, mask, multicores, me
 
 #' @export
 reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
-                                     output_dir, version, rarg_year) {
+                                     output_dir, version, rarg_year,
+                                     exclude_mask_na = FALSE) {
     # build args for expression
     terraclass_years <- c(2008, 2010, 2012, 2014, 2018, 2020, 2022)
 
@@ -625,6 +646,7 @@ reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
+            exclude_mask_na = exclude_mask_na,
             multicores = multicores,
             memsize = memsize,
             output_dir = output_dir,
@@ -770,7 +792,7 @@ reclassify_rule20_temporal_trajectory_urban <- function( files,
 }
 
 #' @export
-reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year) {
+reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores, memsize, output_dir, version, rarg_year, exclude_mask_na = FALSE) {
     if (rarg_year == 2022) {
         rules_expression <- bquote(
             list(
@@ -794,6 +816,7 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
             cube = cube,
             mask = mask,
             rules = .(rules_expression),
+            exclude_mask_na = exclude_mask_na,
             multicores = multicores,
             memsize = memsize,
             output_dir = output_dir,
@@ -929,7 +952,7 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
 }
 
 #' @export
-reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, multicores, memsize, output_dir, version) {
+reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
         mask = mask,
@@ -939,6 +962,7 @@ reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, mul
                     cube %in% c("Seasonally_Flooded_ICS", "Wetland_ICS")
             )
         ),
+        exclude_mask_na = exclude_mask_na,
         multicores = multicores,
         memsize = memsize,
         output_dir = output_dir,
