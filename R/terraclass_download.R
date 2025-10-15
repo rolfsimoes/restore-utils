@@ -292,7 +292,7 @@ prepare_terraclass <- function(years, region_id, fix_non_observed = TRUE, fix_ot
 
             # Replace original cube file
             fs::file_move(
-                path = reclassified_cube[["file_info"]][[1]][["path"]],
+                path = reclassified_cube,
                 new_path = current_cube[["file_info"]][[1]][["path"]]
             )
 
