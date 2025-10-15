@@ -280,7 +280,7 @@ prepare_terraclass <- function(years, region_id, fix_non_observed = TRUE, fix_ot
             }
 
             # Reclassify cube
-            reclassified_cube <- generate_urban_mask(
+            reclassified_cube <- .update_urban_mask(
                 files = files,
                 urban_id = 17,
                 nb_id = 25,
@@ -473,7 +473,7 @@ prepare_terraclass <- function(years, region_id, fix_non_observed = TRUE, fix_ot
     extracted_files
 }
 
-generate_urban_mask <- function(files, urban_id, nb_id, output_dir, multicores, memsize, version) {
+.update_urban_mask <- function(files, urban_id, nb_id, output_dir, multicores, memsize, version) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
