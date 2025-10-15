@@ -970,7 +970,6 @@ reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, mul
     )
 }
 
-
 #' @export
 reclassify_rule24_temporal_water_consistency <- function(files,
                                                          water_class_id,
@@ -1087,4 +1086,20 @@ reclassify_rule24_temporal_water_consistency <- function(files,
     unlink(block_files)
     # Return!
     return(out_file)
+}
+
+#' @export
+reclassify_rule25_static_water_mask <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
+    sits::sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "agua" = cube %in% c("Wetland_ICS", "Seasonally_Flooded_ICS") & mask == "Water"
+        ),
+        exclude_mask_na = exclude_mask_na,
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
 }

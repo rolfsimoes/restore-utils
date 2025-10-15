@@ -6,6 +6,10 @@
     fs::path(wm_base_dir) / version / year
 }
 
+.water_mask_rds <- function(water_mask_dir) {
+    fs::path(water_mask_dir) / "water-mask-dir.rds"
+}
+
 #' @export
 prepare_water_mask <- function(region_id, reference_year = 2020, multicores = 36) {
     # Define output dir
@@ -71,4 +75,38 @@ prepare_water_mask <- function(region_id, reference_year = 2020, multicores = 36
     )
 
     sf::gdal_addo(output_file)
+}
+
+#' @export
+load_water_mask <- function(reference_year = 2020, multicores = 36, memsize = 120) {
+    # Define output dir
+    water_mask_dir <- .water_mask_dir(year = reference_year, version = "glad")
+
+    # Define rds file
+    rds_file <- .water_mask_rds(water_mask_dir)
+
+    if (fs::file_exists(rds_file)) {
+
+        cube <- readRDS(rds_file)
+
+    } else {
+        # Load cube
+        cube <- sits::sits_cube(
+            source = "MPC",
+            collection = "LANDSAT-C2-L2",
+            data_dir = water_mask_dir,
+            multicores = multicores,
+            memsize = memsize,
+            parse_info = c("satellite", "sensor",
+                           "tile", "start_date", "end_date",
+                           "band", "version"),
+            bands = "class",
+            labels = c("0" = "NoWater", "1" = "Water")
+        )
+
+        # Save RDS
+        saveRDS(cube, rds_file)
+    }
+
+    return(cube)
 }
