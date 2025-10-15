@@ -517,7 +517,7 @@ prepare_terraclass <- function(years, region_id, fix_non_observed = TRUE, fix_ot
     )
     # Create chunks
     chunks <- sits:::.chunks_create(
-        block = block,
+        block = c(ncols = 5120, nrows = 5120),#block,
         overlap = 0,
         image_size = image_size,
         image_bbox = sits:::.bbox(
