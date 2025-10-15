@@ -32,6 +32,36 @@ NumericMatrix C_trajectory_transition_analysis(NumericMatrix data, int reference
     return data;
 }
 
+
+// [[Rcpp::export]]
+NumericVector C_urban_transition(NumericMatrix data, int urban_id, int nb_id) {
+    int npixel = data.nrow();
+    int nyear = data.ncol();
+
+    int current_index;
+    if (nyear == 2) {
+        current_index = 0;
+        for (int i = 0; i < npixel; i++) {
+            bool valid_neighbor = data(i, 0) == nb_id && data(i, 1) == urban_id;
+            if (valid_neighbor) {
+                data(i, 0) = urban_id;
+            }
+        }
+    } else {
+        current_index = 1;
+        for (int i = 0; i < npixel; i++) {
+            bool valid_neighbor_lhs = data(i, 0) == urban_id && data(i, 1) == nb_id;
+            bool valid_neighbor_rhs = data(i, 2) == urban_id && data(i, 1) == nb_id;
+
+            if (valid_neighbor_lhs || valid_neighbor_rhs) {
+                data(i, 1) = urban_id;
+            }
+        }
+    }
+
+    return data(_, current_index);
+}
+
 // [[Rcpp::export]]
 NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_class, int replacement_class) {
     int npixel = data.nrow();

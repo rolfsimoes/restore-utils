@@ -53,6 +53,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_urban_transition
+NumericVector C_urban_transition(NumericMatrix data, int urban_id, int nb_id);
+RcppExport SEXP _restoreutils_C_urban_transition(SEXP dataSEXP, SEXP urban_idSEXP, SEXP nb_idSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type urban_id(urban_idSEXP);
+    Rcpp::traits::input_parameter< int >::type nb_id(nb_idSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_urban_transition(data, urban_id, nb_id));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_trajectory_neighbor_analysis
 NumericMatrix C_trajectory_neighbor_analysis(NumericMatrix data, int reference_class, int replacement_class);
 RcppExport SEXP _restoreutils_C_trajectory_neighbor_analysis(SEXP dataSEXP, SEXP reference_classSEXP, SEXP replacement_classSEXP) {
@@ -122,6 +135,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_context_cleaner", (DL_FUNC) &_restoreutils_C_context_cleaner, 7},
     {"_restoreutils_C_remap_values", (DL_FUNC) &_restoreutils_C_remap_values, 3},
     {"_restoreutils_C_trajectory_transition_analysis", (DL_FUNC) &_restoreutils_C_trajectory_transition_analysis, 3},
+    {"_restoreutils_C_urban_transition", (DL_FUNC) &_restoreutils_C_urban_transition, 3},
     {"_restoreutils_C_trajectory_neighbor_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_analysis, 3},
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis, 2},
     {"_restoreutils_C_trajectory_neighbor_majority_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis, 2},
