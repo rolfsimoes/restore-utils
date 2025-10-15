@@ -13,6 +13,10 @@ C_trajectory_transition_analysis <- function(data, reference_class, neighbor_cla
     .Call(`_restoreutils_C_trajectory_transition_analysis`, data, reference_class, neighbor_class)
 }
 
+C_urban_transition <- function(data, urban_id, nb_id) {
+    .Call(`_restoreutils_C_urban_transition`, data, urban_id, nb_id)
+}
+
 C_trajectory_neighbor_analysis <- function(data, reference_class, replacement_class) {
     .Call(`_restoreutils_C_trajectory_neighbor_analysis`, data, reference_class, replacement_class)
 }
