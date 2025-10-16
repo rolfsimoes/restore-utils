@@ -3,6 +3,22 @@
 }
 
 #' @export
+reclassify_rule0_forest <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
+    sits::sits_reclassify(
+        cube = cube,
+        mask = mask,
+        rules = list(
+            "Forest" = cube == "Forest" | mask == "Vegetação Nativa"
+        ),
+        exclude_mask_na = exclude_mask_na,
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir,
+        version = version
+    )
+}
+
+#' @export
 reclassify_rule1_secundary_vegetation <- function(cube, mask, multicores, memsize, output_dir, version, exclude_mask_na = FALSE) {
     sits::sits_reclassify(
         cube = cube,
@@ -28,7 +44,6 @@ reclassify_rule2_current_deforestation <- function(cube, mask, multicores, memsi
     # build expression
     rules_expression <- bquote(
         list(
-            "Forest" = cube == "Forest" | mask == "Vegetação Nativa",
             "deforest_year" = mask == .(deforestation_year)
         )
     )
