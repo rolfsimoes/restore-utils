@@ -9,6 +9,15 @@
     fs::path(prodes_dir) / "prodes.rds"
 }
 
+.prodes_nonforest_output_file <- function(year, output_dir) {
+    # Define output file
+    file_output <- sprintf(
+        "LANDSAT_TM-ETM-OLI_MOSAIC_%s-01-01_%s-12-31_class_v1.tif", 2000, year
+    )
+
+    fs::path(output_dir, file_output)
+}
+
 .prodes_nonforest_download <- function(output_dir) {
     # Ensure output directory exists
     fs::dir_create(output_dir)
@@ -82,17 +91,7 @@
     prodes_valid <- sf::st_is_valid(prodes)
     prodes <- prodes[prodes_valid,]
 
-    # Get min/max dates
-    dates <- unique(prodes[["year"]])
-
-    start_date <- min(dates)
-    end_date <- max(dates)
-
-    # Define output file
-    file_output <- sprintf(
-        "LANDSAT_TM-ETM-OLI_MOSAIC_%s-01-01_%s-12-31_class_v1.tif", start_date, end_date
-    )
-    file_output <- fs::path(output_dir, file_output)
+    file_output <- .prodes_nonforest_output_file(prodes, output_dir)
 
     # Define file output metadata
     meta <- tibble::tibble(
@@ -232,19 +231,27 @@ prodes_generate_mask <- function(target_year,
         # Create output directory
         fs::dir_create(output_dir_nonforest)
 
-        # Download non-forest data
-        prodes_nonforest <- .prodes_nonforest_download(output_dir_nonforest)
-
-        # Filter by year
-        prodes_nonforest <- prodes_nonforest |>
-                                dplyr::filter(.data[["year"]] <= !!target_year)
-
-        # Rasterize non-forest
-        prodes_nonforest <- .prodes_nonforest_rasterize(
-            prodes        = prodes_nonforest,
-            output_dir    = output_dir_nonforest,
-            class_id      = 1 # as this is yearly - it is ok to keep 1
+        # Check non-forst file
+        nonforst_file <- .prodes_nonforest_output_file(
+            year       = target_year,
+            output_dir = output_dir_nonforest
         )
+
+        if (!fs::file_exists(nonforst_file)) {
+            # Download non-forest data
+            prodes_nonforest <- .prodes_nonforest_download(output_dir_nonforest)
+
+            # Filter by year
+            prodes_nonforest <- prodes_nonforest |>
+                dplyr::filter(.data[["year"]] <= !!target_year)
+
+            # Rasterize non-forest
+            .prodes_nonforest_rasterize(
+                prodes        = prodes_nonforest,
+                output_dir    = output_dir_nonforest,
+                class_id      = 1 # as this is yearly - it is ok to keep 1
+            )
+        }
 
         # Load non-forest as cube
         prodes_nonforest <- sits::sits_cube(
