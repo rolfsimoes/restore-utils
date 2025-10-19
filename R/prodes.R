@@ -152,6 +152,9 @@ prodes_generate_mask <- function(target_year,
                                  prodes_loader = NULL,
                                  exclude_mask_na = FALSE,
                                  nonforest_mask = FALSE) {
+
+    cli::cli_inform("> Processing {target_year}")
+
     if (target_year >= 2024) {
         cli::cli_abort(
             "Nothing to do: 2024 is the most recent year; the forest in this year represents the actual available forest"
@@ -222,6 +225,8 @@ prodes_generate_mask <- function(target_year,
 
     # If required, mask non-forest
     if (nonforest_mask) {
+        cli::cli_inform("> Processing {target_year} > Applying non-forest mask")
+
         # Define current deforestation year label
         current_deforestation_year <- paste0("d", target_year)
 
@@ -302,6 +307,8 @@ prodes_generate_mask <- function(target_year,
 
         # Replace old mask with the new one
         prodes_forest_mask <- prodes_forest_mask_new
+
+        cli::cli_inform("> Processing {target_year} > Finalized non-forest mask")
     }
 
     # Return result!
