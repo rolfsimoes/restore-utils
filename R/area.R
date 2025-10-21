@@ -1,3 +1,17 @@
+#' @export
+cube_save_area_stats <- function(cube, multicores, memsize, res, output_dir, version) {
+    # Generate cube area stats
+    stats_values <- calculate_area_by_class(
+        cube       = cube,
+        multicores = multicores,
+        memsize    = memsize,
+        res        = res
+    )
+    # Create file
+    file_name <- fs::path(output_dir) / paste0("area_", version, ".csv")
+    # Write values
+    write.csv(stats_values, file_name , row.names = FALSE)
+}
 
 #' @export
 cube_pixel_frequency <- function(cube, multicores, memsize) {
