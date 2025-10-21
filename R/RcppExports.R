@@ -25,6 +25,10 @@ C_trajectory_neighbor_consistency_analysis <- function(data, reference_class) {
     .Call(`_restoreutils_C_trajectory_neighbor_consistency_analysis`, data, reference_class)
 }
 
+C_trajectory_neighbor_consistency_analysis_with_mask <- function(data, mask, data_class, mask_class) {
+    .Call(`_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask`, data, mask, data_class, mask_class)
+}
+
 C_trajectory_neighbor_majority_analysis <- function(data, reference_class) {
     .Call(`_restoreutils_C_trajectory_neighbor_majority_analysis`, data, reference_class)
 }

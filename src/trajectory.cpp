@@ -119,6 +119,28 @@ NumericMatrix C_trajectory_neighbor_consistency_analysis(NumericMatrix data, int
 }
 
 // [[Rcpp::export]]
+NumericMatrix C_trajectory_neighbor_consistency_analysis_with_mask(NumericMatrix data, NumericMatrix mask, int data_class, int mask_class) {
+    int npixel = data.nrow();
+
+    if (data.nrow() != mask.nrow()) {
+        stop("Data and mask must have the same dimensions");
+    }
+
+    for (int i = 0; i < npixel; i++) {
+        bool is_mask_left_valid  = mask(i, 0) == mask_class;
+        bool is_mask_right_valid = mask(i, 1) == mask_class;
+
+        bool is_data_middle_invalid = data(i, 0) != data_class;
+
+        if (is_mask_left_valid && is_mask_right_valid && is_data_middle_invalid) {
+            data(i, 0) = data_class;
+        }
+    }
+
+    return data;
+}
+
+// [[Rcpp::export]]
 NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int reference_class) {
     // This rule was originally implemented to:
     // > "Se temos classe x, ag anual (2ciclos), classe x, o valor do meio (ag anual), vira classe x"
