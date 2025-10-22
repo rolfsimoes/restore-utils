@@ -2,6 +2,16 @@
     paste0(version, "-perene-reclass", ".tif")
 }
 
+.reclassify_temp_filename <- function(version) {
+    paste0(version, "-temp-reclass", ".tif")
+}
+
+.reclassify_sits_name <- function(version, year) {
+    # Prepare output file
+    template_name <- "LANDSAT_OLI_MOSAIC_%d-01-01_%d-01-31_class_%s.tif"
+    sprintf(template_name, year, year, version)
+}
+
 .reclassify_save_rds <- function(cube, output_dir, version) {
     file <- fs::path(output_dir) / "rds" / paste0(version, ".rds")
     fs::dir_create(fs::path_dir(file))
@@ -902,7 +912,7 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
     # Define output file
-    out_filename <- .reclassify_perene_filename(version)
+    out_filename <- .reclassify_temp_filename(version)
     out_file <- fs::path(output_dir) / out_filename
     # If result already exists, return it!
     if (file.exists(out_file)) {
@@ -1041,6 +1051,7 @@ reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, mul
 #' @export
 reclassify_rule24_temporal_water_consistency <- function(files,
                                                          water_class_id,
+                                                         year,
                                                          version,
                                                          multicores,
                                                          memsize,
@@ -1049,7 +1060,8 @@ reclassify_rule24_temporal_water_consistency <- function(files,
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
     # Define output file
-    out_filename <- .reclassify_perene_filename(version)
+    out_filename <- .reclassify_sits_name(version, year)
+
     out_file <- fs::path(output_dir) / out_filename
     # If result already exists, return it!
     if (file.exists(out_file)) {
@@ -1131,7 +1143,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
             files = block_file,
             block = block,
             bbox = sits:::.bbox(chunk),
-            values = values,
+            values = values[, 2],
             data_type = "INT1U",
             missing_value = 255,
             crop_block = NULL
@@ -1196,22 +1208,26 @@ reclassify_rule26_silviculture_pasture_vs <- function(cube, mask, multicores, me
 
 #' @export
 reclassify_rule27_temporal_trajectory_perene_mask <- function(files,
-                                                         files_mask,
-                                                         file_out,
-                                                         perene_class_id,
-                                                         perene_mask_class_id,
-                                                         version,
-                                                         multicores,
-                                                         memsize,
-                                                         output_dir) {
+                                                              files_mask,
+                                                              year,
+                                                              perene_class_id,
+                                                              perene_mask_class_id,
+                                                              version,
+                                                              multicores,
+                                                              memsize,
+                                                              output_dir) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
+
+    # Define output file
+    out_filename <- .reclassify_sits_name(version, year)
+
+    file_out <- fs::path(output_dir) / out_filename
     # If result already exists, return it!
     if (file.exists(file_out)) {
         return(file_out)
     }
-    out_filename <- fs::path_file(file_out)
     # The following functions define optimal parameters for parallel processing
     rast_template <- sits:::.raster_open_rast(files)
     image_size <- list(
@@ -1291,10 +1307,10 @@ reclassify_rule27_temporal_trajectory_perene_mask <- function(files,
         )
         # Process data
         values <- restoreutils:::C_trajectory_neighbor_consistency_analysis_with_mask(
-            data        = data,
-            mask        = mask,
-            data_class  = data_class,
-            mask_class  = forest_class_id
+            data        = values,
+            mask        = values_mask,
+            data_class  = perene_class_id,
+            mask_class  = perene_mask_class_id
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

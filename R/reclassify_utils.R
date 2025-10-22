@@ -1,21 +1,20 @@
 
 #' @export
-reclassify_temporal_results_to_maps <- function(files, file_reclassified, version) {
-    purrr::map_chr(seq_len(length(files)), function(idx) {
-        file_path <- files[[idx]]
-        file_out_path <- stringr::str_replace(file_path,
-                                              ".tif",
-                                              .reclassify_perene_filename(version))
+reclassify_temporal_results_to_maps <- function(years, output_dir, file_brick, version) {
+    output_dir <- fs::path(output_dir)
+    fs::dir_create(output_dir)
 
-        message("Processing: ",
-                basename(file_reclassified),
-                " → ",
-                basename(file_out_path))
+    purrr::map_chr(seq_len(length(years)), function(idx) {
+        year <- years[idx]
+        out_file <- .reclassify_sits_name(version, year)
+        out_file <- output_dir / out_file
+
+        message("Processing: ", year)
 
         sf::gdal_utils(
             util = "translate",
-            source = as.character(fs::path_expand(file_reclassified)),
-            destination = file_out_path,
+            source = as.character(fs::path_expand(file_brick)),
+            destination = as.character(fs::path_expand(out_file)),
             options = sits:::.gdal_params(
                 list(
                     "-b"     = as.character(idx),
@@ -29,9 +28,9 @@ reclassify_temporal_results_to_maps <- function(files, file_reclassified, versio
             quiet = FALSE
         )
 
-        sf::gdal_addo(file_out_path)
+        sf::gdal_addo(out_file)
 
-        file_out_path
+        out_file
     })
 }
 

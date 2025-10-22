@@ -74,6 +74,7 @@ load_restore_map_glad <- function(data_dir, multicores = 32, memsize = 120, labe
 
 
 
+
 #' @export
 get_restore_masks_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
     files_dir <- create_data_dir("data/derived/masks", mask_version)
@@ -103,7 +104,32 @@ get_restore_masks_files <- function(mask_version, files_version, multicores = 32
     return(files)
 }
 
+#' @export
+get_restore_rds_files <- function(mask_version) {
+    files_dir <- fs::path("data/derived/masks") / mask_version
 
+    files <- fs::dir_ls(
+        path = files_dir,
+        regexp = "mask-cube.rds",
+        recurse = TRUE
+    )
+
+    files_lst <- lapply(files, function(file_rds) {
+        cube <- readRDS(file_rds)
+        year <-  as.integer(gsub(".*/(\\d{4})", "\\1", fs::path_dir(file_rds)))
+
+        tibble::tibble(
+            file = file_rds,
+            year = year,
+            labels = list(sits::sits_labels(cube)),
+            path = cube[["file_info"]][[1]][["path"]]
+        )
+    })
+
+    files <- do.call(rbind, files_lst)
+
+    return(files)
+}
 
 #' @export
 get_restore_assets_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
