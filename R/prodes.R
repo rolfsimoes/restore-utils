@@ -151,7 +151,8 @@ prodes_generate_mask <- function(target_year,
                                  memsize = 120,
                                  prodes_loader = NULL,
                                  exclude_mask_na = FALSE,
-                                 nonforest_mask = FALSE) {
+                                 nonforest_mask = FALSE,
+                                 allow_forest_only = FALSE) {
 
     cli::cli_inform("> Processing {target_year}")
 
@@ -197,7 +198,7 @@ prodes_generate_mask <- function(target_year,
     fs::dir_create(output_dir)
 
     # Reclassify!
-    if (target_year >= 2008) {
+    if (target_year >= 2008 || allow_forest_only && target_year <= 2007) {
         # Build reclassification expression
         rules_expression <- bquote(
             list(
