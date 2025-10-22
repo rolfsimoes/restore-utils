@@ -1296,14 +1296,52 @@ reclassify_rule27_temporal_trajectory_perene_mask <- function(files,
         if (file.exists(block_file)) {
             return(block_file)
         }
+        # Output mask file name
+        mask_block_file1 <- sits:::.file_block_name(
+            pattern = sits:::.file_pattern(file_out, suffix = "_mask1"),
+            block = block, output_dir = output_dir
+        )
+
+        mask_block_file2 <- sits:::.file_block_name(
+            pattern = sits:::.file_pattern(file_out, suffix = "_mask2"),
+            block = block, output_dir = output_dir
+        )
+
+        # Project mask block to template block
+        # Get band conf missing value
+        band_conf <- sits:::.conf_derived_band(
+            derived_class = "class_cube", band = "class"
+        )
+        # Create template block for mask
+        sits:::.gdal_template_block(
+            block = block, bbox = sits:::.bbox(chunk), file = mask_block_file1,
+            nlayers = 1L, miss_value = sits:::.miss_value(band_conf),
+            data_type = sits:::.data_type(band_conf)
+        )
+        sits:::.gdal_template_block(
+            block = block, bbox = sits:::.bbox(chunk), file = mask_block_file2,
+            nlayers = 1L, miss_value = sits:::.miss_value(band_conf),
+            data_type = sits:::.data_type(band_conf)
+        )
+        # Copy values from mask cube into mask template
+        sits:::.gdal_merge_into(
+            file = mask_block_file1,
+            base_files = files_mask[[1]], multicores = 1L
+        )
+        # Copy values from mask cube into mask template
+        sits:::.gdal_merge_into(
+            file = mask_block_file2,
+            base_files = files_mask[[2]], multicores = 1L
+        )
+
         # Read raster values
         values <- sits:::.raster_read_rast(
             files = files,
             block = block
         )
         values_mask <- sits:::.raster_read_rast(
-            files = files_mask,
-            block = block
+            files = c(mask_block_file1, mask_block_file2),
+            block = NULL
         )
         # Process data
         values <- restoreutils:::C_trajectory_neighbor_consistency_analysis_with_mask(
@@ -1324,6 +1362,8 @@ reclassify_rule27_temporal_trajectory_perene_mask <- function(files,
         )
         # Free memory
         gc()
+        # Unlink files
+        unlink(c(mask_block_file1, mask_block_file2))
         # Returned block file
         block_file
     }, progress = TRUE)
