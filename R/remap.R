@@ -34,6 +34,24 @@ restore_mapping_reference_table <- function() {
 }
 
 #' @export
+restore_mapping_release_table <- function() {
+    tibble::tibble(source = numeric(), target = numeric()) |>
+        tibble::add_row(source = 100, target = 1)  |>  # "2ciclos"
+        tibble::add_row(source = 101, target = 2)  |>  # "Agr. Semiperene"
+        tibble::add_row(source = 102, target = 3)  |>  # "agua"
+        tibble::add_row(source = 103, target = 4)  |>  # "Forest"
+        tibble::add_row(source = 106, target = 5)  |>  # "Silvicultura"
+        tibble::add_row(source = 107, target = 6)  |>  # "vegetacao_secundaria"
+        tibble::add_row(source = 108, target = 7)  |>  # "mineracao"
+        tibble::add_row(source = 109, target = 8)  |>  # "area_urbanizada"
+        tibble::add_row(source = 111, target = 9)  |>  # "nat_non_forest"
+        tibble::add_row(source = 104, target = 10) |>  # "Pasture"
+        tibble::add_row(source = 105, target = 11) |>  # "Wetlands"
+        tibble::add_row(source = 110, target = 12) |>  # "desmatamento"
+        tibble::add_row(source = 112, target = 13)     # "Perene"
+}
+
+#' @export
 cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference = NULL) {
     # Define mapping reference when not exists
     if (is.null(mapping_reference)) {
