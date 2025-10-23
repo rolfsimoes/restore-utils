@@ -46,7 +46,9 @@ cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference 
     # Create directory
     fs::dir_create(output_dir)
 
-    purr::map_chr(seq_len(nrow(cube)), function(idx) {
+    # For tile remap
+    purrr::map_dfr(seq_len(nrow(cube)), function(idx) {
+        # Define tile
         tile <- cube[idx, ]
 
         # 1. Get files
@@ -55,16 +57,19 @@ cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference 
         # Define output file
         file_out <- output_dir / fs::path_file(file_path)
 
+        # Update tile label
+        tile[["file_info"]][[1]][["path"]] <- file_out
+
         # If file exists, return it
         if (fs::file_exists(file_out)) {
-            return(file_out)
+            return(tile)
         }
 
         # Define file rules
         file_rules <- .build_remap_table(tile, mapping_reference)
 
         # Remap!
-        file_out <- restoreutils::reclassify_remap_pixels(
+        file_out <- reclassify_remap_pixels(
             file       = file_path,
             file_out   = file_out,
             rules      = file_rules,
@@ -75,9 +80,6 @@ cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference 
 
         # Create overviews
         sf::gdal_addo(file_out)
-
-        # Update tile label
-        tile[["file_info"]][[1]][["path"]] <- file_out
 
         # Return!
         tile
@@ -108,4 +110,3 @@ cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference 
     # Return!
     return(cube_labels_remap)
 }
-
