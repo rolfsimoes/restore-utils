@@ -52,7 +52,7 @@ restore_mapping_release_table <- function() {
 }
 
 #' @export
-cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference = NULL) {
+cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference = NULL, rules = NULL) {
     # Define mapping reference when not exists
     if (is.null(mapping_reference)) {
         mapping_reference <- restore_mapping_reference_table()
@@ -84,13 +84,15 @@ cube_remap <- function(cube, output_dir, multicores, memsize, mapping_reference 
         }
 
         # Define file rules
-        file_rules <- .build_remap_table(tile, mapping_reference)
+        if (is.null(rules)) {
+            rules <- .build_remap_table(tile, mapping_reference)
+        }
 
         # Remap!
         file_out <- reclassify_remap_pixels(
             file       = file_path,
             file_out   = file_out,
-            rules      = file_rules,
+            rules      = rules,
             multicores = multicores,
             memsize    = memsize,
             output_dir = output_dir
