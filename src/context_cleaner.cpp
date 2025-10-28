@@ -78,3 +78,36 @@ NumericVector C_context_cleaner(const NumericMatrix& x, int ncols, int nrows,
     }
     return res;
 }
+
+// [[Rcpp::export]]
+NumericVector C_na_cleaner(const NumericMatrix& x, int ncols, int nrows,
+                           int band, int window_size) {
+    // initialize result vectors
+    NumericVector res(x.nrow());
+    NumericVector neigh(window_size * window_size);
+    double modal_value;
+    if (window_size < 1) {
+        res = x(_, band);
+        return res;
+    }
+    // compute window leg
+    int leg = window_size / 2;
+    // compute locus mirror
+    IntegerVector loci = locus_mirror(nrows, leg);
+    IntegerVector locj = locus_mirror(ncols, leg);
+    // compute values for each pixel
+    for (int i = 0; i < nrows; ++i) {
+        for (int j = 0; j < ncols; ++j) {
+            // window
+            for (int wi = 0; wi < window_size; ++wi)
+                for (int wj = 0; wj < window_size; ++wj)
+                    neigh(wi * window_size + wj) =
+                        x(loci(wi + i) * ncols + locj(wj + j), band);
+
+            if (std::isnan(x(i * ncols + j, band))) {
+                res(i * ncols + j) = modal(neigh);
+            }
+        }
+    }
+    return res;
+}

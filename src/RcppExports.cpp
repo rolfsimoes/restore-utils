@@ -27,6 +27,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_na_cleaner
+NumericVector C_na_cleaner(const NumericMatrix& x, int ncols, int nrows, int band, int window_size);
+RcppExport SEXP _restoreutils_C_na_cleaner(SEXP xSEXP, SEXP ncolsSEXP, SEXP nrowsSEXP, SEXP bandSEXP, SEXP window_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type ncols(ncolsSEXP);
+    Rcpp::traits::input_parameter< int >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< int >::type band(bandSEXP);
+    Rcpp::traits::input_parameter< int >::type window_size(window_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_na_cleaner(x, ncols, nrows, band, window_size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_remap_values
 NumericMatrix C_remap_values(NumericMatrix& data, int source, int target);
 RcppExport SEXP _restoreutils_C_remap_values(SEXP dataSEXP, SEXP sourceSEXP, SEXP targetSEXP) {
@@ -147,6 +162,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_context_cleaner", (DL_FUNC) &_restoreutils_C_context_cleaner, 7},
+    {"_restoreutils_C_na_cleaner", (DL_FUNC) &_restoreutils_C_na_cleaner, 5},
     {"_restoreutils_C_remap_values", (DL_FUNC) &_restoreutils_C_remap_values, 3},
     {"_restoreutils_C_trajectory_transition_analysis", (DL_FUNC) &_restoreutils_C_trajectory_transition_analysis, 3},
     {"_restoreutils_C_urban_transition", (DL_FUNC) &_restoreutils_C_urban_transition, 3},

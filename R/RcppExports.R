@@ -5,6 +5,10 @@ C_context_cleaner <- function(x, ncols, nrows, band, window_size, target_class, 
     .Call(`_restoreutils_C_context_cleaner`, x, ncols, nrows, band, window_size, target_class, mode_class)
 }
 
+C_na_cleaner <- function(x, ncols, nrows, band, window_size) {
+    .Call(`_restoreutils_C_na_cleaner`, x, ncols, nrows, band, window_size)
+}
+
 C_remap_values <- function(data, source, target) {
     .Call(`_restoreutils_C_remap_values`, data, source, target)
 }
