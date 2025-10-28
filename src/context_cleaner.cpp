@@ -21,14 +21,14 @@ IntegerVector locus_mirror(int size, int leg) {
 // The source code can be found in
 // https://github.com/rspatial/terra/blob/bcce14dd1778a36a43e2a211704feb8128f2c953/src/vecmath.h
 double modal(const NumericVector& neigh) {
-
     std::map<double, size_t> count;
-    for(size_t i=0; i<neigh.size(); i++) {
+
+    for(size_t i = 0; i< neigh.size(); i++) {
         if (std::isnan(neigh[i])) {
-            return NAN;
-        } else {
-            count[neigh[i]]++;
+            continue;
         }
+
+        count[neigh[i]]++;
     }
 
     std::map<double, size_t>::iterator mode =
@@ -106,6 +106,8 @@ NumericVector C_na_cleaner(const NumericMatrix& x, int ncols, int nrows,
 
             if (std::isnan(x(i * ncols + j, band))) {
                 res(i * ncols + j) = modal(neigh);
+            } else {
+                res(i * ncols + j) = x(i * ncols + j, band);
             }
         }
     }

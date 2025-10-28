@@ -5,6 +5,7 @@ na_cleaner <- function(cube,
                        multicores = 2L,
                        output_dir,
                        version = "v1",
+                       roi = NULL,
                        progress = TRUE) {
     # Overlapping pixels
     overlap <- ceiling(window_size / 2L) - 1L
@@ -35,10 +36,13 @@ na_cleaner <- function(cube,
         memsize = memsize,
         multicores = multicores
     )
+    # Spatial filter
+    if (sits:::.has(roi)) {
+        roi <- sits:::.roi_as_sf(roi)
+    }
     # Prepare parallelization
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
-
     # Process each tile sequentially
     clean_cube <- sits:::.cube_foreach_tile(cube, function(tile) {
         # Process the data
@@ -50,7 +54,8 @@ na_cleaner <- function(cube,
             overlap = overlap,
             output_dir = output_dir,
             version = version,
-            progress = progress
+            progress = progress,
+            roi = roi
         )
     })
     # Update cube class and return
@@ -61,11 +66,13 @@ na_cleaner <- function(cube,
 .na_cleaner <- function(tile,
                         block,
                         band,
+                        roi,
                         window_size,
                         overlap,
                         output_dir,
                         version,
                         progress) {
+    update_bbox <- FALSE
     # Output file
     out_file <- sits:::.file_derived_name(
         tile = tile, band = band, version = version, output_dir = output_dir
@@ -85,6 +92,23 @@ na_cleaner <- function(cube,
     }
     # Create chunks as jobs
     chunks <- sits:::.tile_chunks_create(tile = tile, overlap = overlap, block = block)
+    # Filter chunks
+    if (sits:::.has(roi)) {
+        # How many chunks there are in tile?
+        nchunks <- nrow(chunks)
+        # Remove chunks within the exclusion mask
+        chunks <- sits:::.chunks_filter_mask(
+            chunks = chunks,
+            mask = roi
+        )
+        # Create crop region
+        chunks["mask"] <- sits:::.chunks_crop_mask(
+            chunks = chunks,
+            mask = roi
+        )
+        # Should bbox of resulting tile be updated?
+        update_bbox <- nrow(chunks) != nchunks
+    }
     # Process jobs sequentially
     block_files <- sits:::.jobs_map_parallel_chr(chunks, function(chunk) {
         # Get job block
@@ -109,18 +133,16 @@ na_cleaner <- function(cube,
             ncols = block[["ncols"]],
             nrows = block[["nrows"]],
             band = 0L,
-            window_size = window_size,
+            window_size = window_size
         )
         # Prepare fractions to be saved
         band_conf <- sits:::.tile_band_conf(tile = tile, band = band)
-        # Job crop block
-        crop_block <- sits:::.block(sits:::.chunks_no_overlap(chunk))
         # Prepare and save results as raster
         sits:::.raster_write_block(
             files = block_files, block = block, bbox = sits:::.bbox(chunk),
             values = values, data_type = sits:::.data_type(band_conf),
             missing_value = sits:::.miss_value(band_conf),
-            crop_block = crop_block
+            crop_block = chunk[["mask"]]
         )
         # Free memory
         gc()
@@ -136,7 +158,7 @@ na_cleaner <- function(cube,
         derived_class = sits:::.tile_derived_class(tile),
         block_files = block_files,
         multicores = 1L,
-        update_bbox = FALSE
+        update_bbox = update_bbox
     )
 }
 
