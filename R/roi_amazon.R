@@ -1,25 +1,25 @@
-.roi_ecoregion_data_file <- function() {
+.roi_amazon_ecoregion_data_file <- function() {
     default_file <- system.file("extdata/amazon/amazon-regions-bdc-md.gpkg", package = "restoreutils")
 
-    fs::path(Sys.getenv("RESTORE_PLUS_ROI_FILE", default_file))
+    fs::path(Sys.getenv("RESTORE_PLUS_AMAZON_REGION_ROI_FILE", default_file))
 }
 
 .roi_amazon_biome_data_file <- function() {
     default_file <- system.file("extdata/amazon/amazon-biome.gpkg", package = "restoreutils")
 
-    fs::path(Sys.getenv("RESTORE_PLUS_ROI_FILE", default_file))
+    fs::path(Sys.getenv("RESTORE_PLUS_AMAZON_BIOME_ROI_FILE", default_file))
 }
 
-.roi_ecoregion_name <- function(region_id) {
+.roi_amazon_ecoregion_name <- function(region_id) {
     paste0("eco_", region_id)
 }
 
-.roi_ecoregion_sf <- function(region_id, crs) {
+.roi_amazon_ecoregion_sf <- function(region_id, crs) {
     # Region name
-    eco_name <- .roi_ecoregion_name(region_id)
+    eco_name <- .roi_amazon_ecoregion_name(region_id)
 
     # Load ecoregion roi file
-    eco_region <- sf::st_read(.roi_ecoregion_data_file(), quiet = TRUE)
+    eco_region <- sf::st_read(.roi_amazon_ecoregion_data_file(), quiet = TRUE)
 
     # Transform / Filter region (region 3)
     eco_region <- sf::st_transform(eco_region, crs = crs)
@@ -39,9 +39,9 @@
 }
 
 #' @export
-roi_ecoregions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as_convex = FALSE, use_buffer = FALSE) {
+roi_amazon_regions <- function(region_id, crs, as_file = FALSE, as_union = FALSE, as_convex = FALSE, use_buffer = FALSE) {
     # generate eco region geometry
-    eco_region_geom <- .roi_ecoregion_sf(
+    eco_region_geom <- .roi_amazon_ecoregion_sf(
         region_id = region_id,
         crs = crs
     )
@@ -108,30 +108,4 @@ roi_amazon_biome <- function(crs = NULL, as_file = FALSE, as_convex = FALSE, use
 
     # return!
     return(amazon_geom)
-}
-
-#' @export
-crop_to_roi <- function(cube, tiles, multicores, output_dir, grid_system = "BDC_MD_V2") {
-    purrr::map_chr(tiles, function(tile) {
-        tile_bbox <- sits_tiles_to_roi(tile, grid_system = grid_system)
-        tile_bbox <- sf::st_as_sfc(tile_bbox)
-
-        tile_cube <- sits_cube_copy(
-            cube = cube,
-            roi = tile_bbox,
-            multicores = multicores,
-            output_dir = output_dir
-        )
-
-        tile_filename_original <- tile_cube[["file_info"]][[1]][["path"]]
-        tile_filename_new <- stringr::str_replace(tile_filename_original,
-                                                  "_MOSAIC_",
-                                                  paste0("_", tile, "_"))
-
-        # rename
-        fs::file_move(tile_filename_original, tile_filename_new)
-
-        # return!
-        tile_filename_new
-    })
 }
