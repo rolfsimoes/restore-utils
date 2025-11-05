@@ -1,4 +1,8 @@
 
+.cube_stac_address <- function() {
+    Sys.getenv("RESTORE_PLUS_STAC_ADDRESS")
+}
+
 #' @export
 cube_generate_indices_bdc <- function(cube, output_dir, multicores, memsize) {
     # Generate NDVI
@@ -32,10 +36,9 @@ cube_generate_indices_bdc <- function(cube, output_dir, multicores, memsize) {
     )
 
     # Generate NBR (https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio)
-    cube <- sits_apply(
-        data       = cube,
-        NBR        = (NIR08 - SWIR22) / (NIR08 + SWIR22),
-        output_dir = output_dir,
+    cube <- sits_apply(data       = cube,
+                       NBR        = (NIR08 - SWIR22) / (NIR08 + SWIR22),
+                       output_dir = output_dir,
         multicores = multicores,
         memsize    = memsize,
         progress   = TRUE
@@ -85,6 +88,36 @@ cube_generate_indices_glad <- function(cube, output_dir, multicores, memsize) {
         memsize    = memsize,
         progress   = TRUE
     )
+
+    return(cube)
+}
+
+#' @export
+cube_load <- function(...) {
+    cube <- sits::sits_cube(...)
+    stac_address <- .cube_stac_address()
+
+    has_stac_address <- stringr::str_length(stac_address) > 0
+
+    if (has_stac_address) {
+        cube <- slider::slide_dfr(cube, function(cube_row) {
+            cube_row[["file_info"]][[1]] <- cube_row[["file_info"]][[1]] |>
+                dplyr::rowwise() |>
+                dplyr::mutate(url_hostname = httr::parse_url(stringr::str_replace(.data[["path"]], "/vsicurl/", ""))[["hostname"]]) |>
+                dplyr::mutate(path = stringr::str_replace(.data[["path"]], .data[["url_hostname"]], !!stac_address)) |>
+                dplyr::mutate(
+                    path = stringr::str_replace(
+                        .data[["path"]],
+                        "/vsicurl/",
+                        "/vsicurl?unsafessl=yes&max_retry=10&url="
+                    )
+                ) |>
+                dplyr::select(-dplyr::any_of("url_hostname")) |>
+                dplyr::as_tibble()
+
+            cube_row
+        })
+    }
 
     return(cube)
 }
