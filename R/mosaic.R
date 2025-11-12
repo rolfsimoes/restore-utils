@@ -152,7 +152,8 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                                    output_dir,
                                    multicores = 64,
                                    bands = NULL,
-                                   roi_file = NULL) {
+                                   roi_file = NULL,
+                                   mbtiles = FALSE) {
     # convert output_dir to fs
     output_dir <- fs::path(output_dir)
 
@@ -199,11 +200,25 @@ cube_to_rgb_mosaic_bdc <- function(cube,
     mosaic_files <- purrr::map_vec(mosaic_timeline, function(timeline_date) {
         # define output file
         mosaic_file <- output_mosaic_complete_dir / paste0(timeline_date, ".tif")
-        mosaic_mbtiles <- output_mosaic_complete_dir / paste0(timeline_date, ".mbtiles")
 
         # if file exists, return it
-        if (fs::file_exists(mosaic_mbtiles)) {
-            return(mosaic_mbtiles)
+        if (fs::file_exists(mosaic_file)) {
+            # create mbtiles if needed
+            mosaic_mbtiles <- output_mosaic_complete_dir / paste0(timeline_date, ".mbtiles")
+            # generate mbtiles if file doesn't exist
+            if (mbtiles && !fs::file_exists(mosaic_mbtiles)) {
+                system(paste(
+                    "gdal_translate -of MBTILES",
+                    mosaic_file,
+                    mosaic_mbtiles,
+                    sep = " "
+                ))
+                # generate cogs
+                system(paste("gdaladdo -r average ", mosaic_file, "2 4 8 16 32", sep = " "))
+                # update mosaic file name
+                mosaic_file <- mosaic_mbtiles
+            }
+            return(mosaic_file)
         }
 
         # filter files by date
@@ -247,15 +262,12 @@ cube_to_rgb_mosaic_bdc <- function(cube,
             sep = " "
         ))
 
-        # translate
-        rgb_file <- output_mosaic_complete_dir / "mosaic-rgb.tif"
-
         # scale image colors
         system(
             paste(
                 "gdal_translate -ot Byte -a_nodata 0 -exponent 0.7 -scale 0 10000 0 255 -b 1 -b 2 -b 3",
                 vrt_merged,
-                rgb_file,
+                mosaic_file,
                 sep = " "
             )
         )
@@ -263,26 +275,26 @@ cube_to_rgb_mosaic_bdc <- function(cube,
         # warp
         if (!is.null(roi_file)) {
             system(paste(
-                "gdalwarp -dstalpha -cutline", roi_file, "-crop_to_cutline", rgb_file, mosaic_file, sep = " "
+                "gdalwarp -dstalpha -cutline -overwrite", roi_file, "-crop_to_cutline", mosaic_file, mosaic_file, sep = " "
             ))
         }
 
         # create mbtiles
-        system(paste(
-            "gdal_translate -of MBTILES",
-            mosaic_file,
-            mosaic_mbtiles,
-            sep = " "
-        ))
-
-        # add mbtiles zoom
-        system(paste("gdaladdo -r average ", mosaic_mbtiles, "2 4 8 16 32", sep = " "))
-
-        # delete temp files
-        fs::file_delete(rgb_file)
+        if (mbtiles) {
+            mosaic_mbtiles <- output_mosaic_complete_dir / paste0(timeline_date, ".mbtiles")
+            system(paste(
+                "gdal_translate -of MBTILES",
+                mosaic_file,
+                mosaic_mbtiles,
+                sep = " "
+            ))
+            # update mosaic file name
+            mosaic_file <- mosaic_mbtiles
+        }
+        system(paste("gdaladdo -r average ", mosaic_file, "2 4 8 16 32", sep = " "))
 
         # return
-        mosaic_mbtiles
+        mosaic_file
     })
 
     # return!
