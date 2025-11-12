@@ -275,7 +275,7 @@ cube_to_rgb_mosaic_bdc <- function(cube,
         # warp
         if (!is.null(roi_file)) {
             system(paste(
-                "gdalwarp -dstalpha -cutline -overwrite", roi_file, "-crop_to_cutline", mosaic_file, mosaic_file, sep = " "
+                "gdalwarp -dstalpha -overwrite -cutline ", roi_file, "-crop_to_cutline", mosaic_file, mosaic_file, sep = " "
             ))
         }
 
