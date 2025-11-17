@@ -1,5 +1,5 @@
 
 #' @export
 version <- function() {
-    "0.1"
+    "0.2"
 }
