@@ -166,7 +166,7 @@ prepare_prodes <- function(region_id, years = 2024,  multicores = 1, timeout = 7
         # If no, crop raster using the eco region selected by the user
         if (!are_files_finished) {
             # Get eco region polygon
-            eco_region_roi <- roi_ecoregions(
+            eco_region_roi <- roi_amazon_regions(
                 region_id  = region_id,
                 crs        = "EPSG:4674",
                 as_union   = TRUE,
