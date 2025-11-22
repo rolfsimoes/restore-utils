@@ -79,7 +79,7 @@
     })
 }
 
-.prodes_nonforest_rasterize <- function(prodes, output_dir, class_id = 1) {
+.prodes_nonforest_rasterize <- function(prodes, year, output_dir, class_id = 1) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -91,13 +91,13 @@
     prodes_valid <- sf::st_is_valid(prodes)
     prodes <- prodes[prodes_valid,]
 
-    file_output <- .prodes_nonforest_output_file(prodes, output_dir)
+    file_output <- .prodes_nonforest_output_file(year, output_dir)
 
     # Define file output metadata
     meta <- tibble::tibble(
         file       = file_output,
-        start_date = as.integer(start_date),
-        end_date   = as.integer(end_date),
+        start_date = 2000,
+        end_date   = year,
         class_id   = class_id
     )
 
@@ -111,7 +111,7 @@
         dplyr::mutate(class = class_id)
 
     # Create temp file to save the current sf object
-    tmp_gpkg <- fs::file_temp(pattern = paste0("prodes-", start_date, "-", end_date), ext = ".gpkg")
+    tmp_gpkg <- fs::file_temp(pattern = paste0("prodes-", 2000, "-", year), ext = ".gpkg")
 
     # Write current sf object
     sf::st_write(prodes_3857, dsn = tmp_gpkg, layer = "year", quiet = TRUE)
@@ -174,6 +174,10 @@ prodes_generate_mask <- function(target_year,
     #   deforestation years = 2024 – 2017
     # All of these deforestation years correspond to forest in 2016.
     deforestation_years <- paste0("d", (target_year + 1):2024)
+
+    if (target_year == 2000) {
+        deforestation_years <- paste0("d", target_year:2024)
+    }
 
     # Define PRODES loader
     if (is.null(prodes_loader)) {
@@ -254,6 +258,7 @@ prodes_generate_mask <- function(target_year,
             # Rasterize non-forest
             .prodes_nonforest_rasterize(
                 prodes        = prodes_nonforest,
+                year          = target_year,
                 output_dir    = output_dir_nonforest,
                 class_id      = 1 # as this is yearly - it is ok to keep 1
             )
