@@ -151,8 +151,7 @@ prodes_generate_mask <- function(target_year,
                                  memsize = 120,
                                  prodes_loader = NULL,
                                  exclude_mask_na = FALSE,
-                                 nonforest_mask = FALSE,
-                                 allow_forest_only = FALSE) {
+                                 nonforest_mask = FALSE) {
 
     cli::cli_inform("> Processing {target_year}")
 
@@ -174,6 +173,7 @@ prodes_generate_mask <- function(target_year,
     #   deforestation years = 2024 – 2017
     # All of these deforestation years correspond to forest in 2016.
     deforestation_years <- paste0("d", (target_year + 1):2024)
+    residual_years <- paste0("r", (target_year + 1):2024)
 
     if (target_year == 2000) {
         deforestation_years <- paste0("d", target_year:2024)
@@ -202,31 +202,26 @@ prodes_generate_mask <- function(target_year,
     fs::dir_create(output_dir)
 
     # Reclassify!
-    if (target_year >= 2008 || allow_forest_only && target_year <= 2007) {
-        # Build reclassification expression
-        rules_expression <- bquote(
-            list(
-                "Vegetação Nativa" = cube == "Vegetação Nativa" |
-                    cube %in% .(deforestation_years)
-            )
+    # Build reclassification expression
+    rules_expression <- bquote(
+        list(
+            "Vegetação Nativa" = cube == "Vegetação Nativa" |
+                cube %in% c(.(deforestation_years), .(residual_years))
         )
+    )
 
-        prodes_forest_mask <- eval(bquote(
-            sits::sits_reclassify(
-                cube       = prodes_cube,
-                mask       = prodes_cube,
-                rules      = .(rules_expression),
-                multicores = multicores,
-                memsize    = memsize,
-                output_dir = output_dir,
-                exclude_mask_na = exclude_mask_na,
-                version    = "v1"
-            )
-        ))
-    } else {
-        # If it is target_year <= 2007, use original PRODES cube
-        prodes_forest_mask <- prodes_cube
-    }
+    prodes_forest_mask <- eval(bquote(
+        sits::sits_reclassify(
+            cube       = prodes_cube,
+            mask       = prodes_cube,
+            rules      = .(rules_expression),
+            multicores = multicores,
+            memsize    = memsize,
+            output_dir = output_dir,
+            exclude_mask_na = exclude_mask_na,
+            version    = "v1"
+        )
+    ))
 
     # If required, mask non-forest
     if (nonforest_mask) {
