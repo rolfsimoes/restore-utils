@@ -136,84 +136,169 @@ download_prodes <- function(year, output_dir, version = "v2") {
     dplyr::select(extracted_files, -.data[["processed"]])
 }
 
+.crop_prodes <- function(year, region_id, version) {
+    # Define output dir
+    output_dir <- .prodes_dir(year = year, version = version)
+
+    # Create directory
+    fs::dir_create(output_dir)
+
+    # Download year file
+    output_file <- .prodes_download(year = year, output_dir = output_dir)
+
+    # Extract files from zip
+    extracted_files <- .prodes_extract_files(year       = year,
+                                             file       = output_file,
+                                             output_dir = output_dir)
+
+    # Check if files are already processed
+    are_files_finished <- all(unname(extracted_files[["processed"]]))
+
+    # If no, crop raster using the eco region selected by the user
+    if (!are_files_finished) {
+        # Get eco region polygon
+        eco_region_roi <- roi_amazon_regions(
+            region_id  = region_id,
+            crs        = "EPSG:4674",
+            as_union   = TRUE,
+            as_file    = TRUE,
+            use_buffer = TRUE
+        )
+
+        eco_region_roi <- terra::vect(eco_region_roi)
+
+        # Select raster file
+        raster_file <- dplyr::filter(extracted_files, type == "raster")
+        raster_file <- raster_file[["file"]]
+
+        # Define temporary file
+        raster_file_out <- stringr::str_replace(
+            raster_file, "v1.tif", "v1-cropped.tif"
+        )
+
+        raster_object <- terra::rast(raster_file)
+        raster_datatype <- terra::datatype(raster_object)
+
+        # Reproject polygon to raster CRS
+        vector_object <- terra::project(
+            x = eco_region_roi,
+            y = terra::crs(raster_object)
+        )
+
+        # Crop raster files in a given eco region
+        terra::crop(
+            x        = raster_object,
+            y        = vector_object,
+            filename = raster_file_out,
+            datatype = raster_datatype,
+            NAflag   = 255,
+            mask     = TRUE
+        )
+
+        # After crop, remove original one
+        fs::file_delete(raster_file)
+
+        # Renamed cropped
+        fs::file_move(raster_file_out, raster_file)
+    }
+
+    # Return!
+    dplyr::select(extracted_files, -.data[["processed"]])
+}
+
 #' @export
-prepare_prodes <- function(region_id, years = 2024,  multicores = 1, timeout = 720, version = "v2") {
-    # Setup multisession workers
-    future::plan(future::multisession, workers = multicores)
+prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 120, version = "v2", prodes_loader = NULL, exclude_mask_na = FALSE, nonforest_mask = TRUE) {
+    # Arrange years for processing using PRODES methodology
+    years <- sort(years, decreasing = TRUE)
 
-    # Download all specified years
-    furrr::future_map(years, function(year) {
-        # Set timeout
-        withr::local_options(timeout = timeout)
+    # Verify if 2008 is into years list with years before 2007
+    if (!2008 %in% years && any(years <= 2007)) {
+        message(
+            paste("Forest masks from PRODES 2000 to 2007 wont be fixed",
+                  "once 2008 was not provided.")
+        )
+    }
 
-        # Define output dir
-        output_dir <- .prodes_dir(year = year, version = version)
+    # List of cropped years
+    years_to_crop <- Map(\(x) x <= 2007 || x == 2024, years)
 
-        # Create directory
-        fs::dir_create(output_dir)
+    # Processing each year
+    purrr::map(seq_len(length(years_to_crop)), function(idx) {
+        # Get current year
+        year <- years[[idx]]
 
-        # Download year file
-        output_file <- .prodes_download(year = year, output_dir = output_dir)
-
-        # Extract files from zip
-        extracted_files <- .prodes_extract_files(year       = year,
-                                                 file       = output_file,
-                                                 output_dir = output_dir)
-
-        # Check if files are already processed
-        are_files_finished <- all(unname(extracted_files[["processed"]]))
-
-        # If no, crop raster using the eco region selected by the user
-        if (!are_files_finished) {
-            # Get eco region polygon
-            eco_region_roi <- roi_amazon_regions(
-                region_id  = region_id,
-                crs        = "EPSG:4674",
-                as_union   = TRUE,
-                as_file    = TRUE,
-                use_buffer = TRUE
+        # Download and crop the specified year
+        if (years_to_crop[[idx]]) {
+            .crop_prodes(
+                year = year,
+                region_id = region_id,
+                version = version
             )
-
-            eco_region_roi <- terra::vect(eco_region_roi)
-
-            # Select raster file
-            raster_file <- dplyr::filter(extracted_files, type == "raster")
-            raster_file <- raster_file[["file"]]
-
-            # Define temporary file
-            raster_file_out <- stringr::str_replace(
-                raster_file, "v1.tif", "v1-cropped.tif"
-            )
-
-            raster_object <- terra::rast(raster_file)
-            raster_datatype <- terra::datatype(raster_object)
-
-            # Reproject polygon to raster CRS
-            vector_object <- terra::project(
-                x = eco_region_roi,
-                y = terra::crs(raster_object)
-            )
-
-            # Crop raster files in a given eco region
-            terra::crop(
-                x        = raster_object,
-                y        = vector_object,
-                filename = raster_file_out,
-                datatype = raster_datatype,
-                NAflag   = 255,
-                mask     = TRUE
-            )
-
-            # After crop, remove original one
-            fs::file_delete(raster_file)
-
-            # Renamed cropped
-            fs::file_move(raster_file_out, raster_file)
         }
 
-        # Return!
-        dplyr::select(extracted_files, -.data[["processed"]])
-    },
-        .options = furrr::furrr_options(seed = TRUE)
-    )
+        # Processing PRODES mask
+        prodes_generate_mask(
+            target_year = year,
+            version = version,
+            multicores = multicores,
+            memsize = memsize,
+            prodes_loader = prodes_loader,
+            exclude_mask_na = exclude_mask_na,
+            nonforest_mask = nonforest_mask
+        )
+
+        # Apply forest fixing from 2000 to 2007
+        if (year <= 2007 && 2008 %in% years) {
+            prodes_2008 <- load_prodes_2008(
+                version = version,
+                multicores = multicores,
+                memsize = memsize
+            )
+
+            # Load current PRODES
+            prodes_loader <- get(paste0("load_prodes_", year))
+
+            # Load PRODES cube
+            prodes_year <- prodes_loader(
+                version    = version,
+                multicores = multicores,
+                memsize    = memsize
+            )
+
+            # Get year deforestation
+            deforest_year <- paste0("d", year)
+
+            # Build reclassification expression
+            rules_expression <- bquote(
+                list(
+                    "Vegetação Nativa" = cube == "Vegetação Nativa" |
+                        mask == "Vegetação Nativa" & !cube == .(deforest_year)
+                )
+            )
+
+            # Reclassify!
+            prodes_forest_mask <- eval(bquote(
+                sits::sits_reclassify(
+                    cube       = prodes_year,
+                    mask       = prodes_2008,
+                    rules      = .(rules_expression),
+                    multicores = multicores,
+                    memsize    = memsize,
+                    output_dir = output_dir,
+                    exclude_mask_na = exclude_mask_na,
+                    version    = "fix-prodes-mask"
+                )
+            ))
+
+            # Get files
+            file_old <- prodes_year[["file_info"]][[1]][["path"]]
+            file_new <- prodes_forest_mask[["file_info"]][[1]][["path"]]
+
+            # Move files
+            fs::file_move(
+                path     = file_new,
+                new_path = file_old
+            )
+        }
+    })
 }
