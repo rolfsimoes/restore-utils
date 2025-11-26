@@ -227,6 +227,12 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
         # Get current year
         year <- years[[idx]]
 
+        # Define output dir
+        output_dir <- .prodes_dir(version = version, year = year)
+
+        # Create output dir
+        fs::dir_create(output_dir)
+
         # Download and crop the specified year
         if (years_to_crop[[idx]]) {
             .crop_prodes(
