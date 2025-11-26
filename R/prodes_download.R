@@ -271,14 +271,11 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
                 memsize    = memsize
             )
 
-            # Get year deforestation
-            deforest_year <- paste0("d", year)
-
             # Build reclassification expression
             rules_expression <- bquote(
                 list(
-                    "Vegetação Nativa" = cube == "Vegetação Nativa" |
-                        mask == "Vegetação Nativa" & !cube == .(deforest_year)
+                    "Vegetação Nativa Antiga" = cube == "Vegetação Nativa",
+                    "Vegetação Nativa"        = mask == "Vegetação Nativa"
                 )
             )
 
