@@ -15,6 +15,6 @@ options(
         "--connect-timeout", "15",
         "--max-time", "720",
         "--verbose"
-    ),
-    "download.file.method" = "libcurl"
+    )
+    #"download.file.method" = "libcurl"
 )
