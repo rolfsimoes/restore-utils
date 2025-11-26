@@ -156,51 +156,51 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                                    mbtiles = FALSE) {
     # convert output_dir to fs
     output_dir <- fs::path(output_dir)
-    
+
     # create base output dirs
     output_mosaic_tile_dir <- output_dir / "tiles"
     output_mosaic_complete_dir <- output_dir / "cube"
-    
+
     # mosaic by tile
     print("Processing tiles")
     mosaic <- purrr::map_dfr(seq_len(nrow(cube)), function(tile_idx) {
         # select tile
         tile <- cube[tile_idx, ]
-        
+
         # extract tile crs
         tile_crs <- unique(cube[["crs"]])
-        
+
         # define output directory
         tile_dir <- output_mosaic_tile_dir / tile[["tile"]]
-        
+
         # create dir
         fs::dir_create(tile_dir, recurse = TRUE)
-        
+
         # mosaic
-        sits_mosaic(
+        sits::sits_mosaic(
             cube       = tile,
             multicores = multicores,
             output_dir = tile_dir,
             crs        = tile_crs
         )
     })
-    
+
     print("Finished - tiles are now ready")
-    
+
     # create output dir to the whole area
     fs::dir_create(output_mosaic_complete_dir, recurse = TRUE)
-    
+
     # get mosaic timeline
-    mosaic_timeline <- sits_timeline(mosaic)
-    
+    mosaic_timeline <- sits::sits_timeline(mosaic)
+
     # merge mosaic file infos
     mosaic_files <- dplyr::bind_rows(mosaic[["file_info"]])
-    
+
     # mosaic by date
     mosaic_files <- purrr::map_vec(mosaic_timeline, function(timeline_date) {
         # define output file
         mosaic_file <- output_mosaic_complete_dir / paste0(timeline_date, ".tif")
-        
+
         # if file exists, return it
         if (fs::file_exists(mosaic_file)) {
             # create mbtiles if needed
@@ -220,19 +220,19 @@ cube_to_rgb_mosaic_bdc <- function(cube,
             }
             return(mosaic_file)
         }
-        
+
         # filter files by date
         tiles_in_date <- mosaic_files  |>
             dplyr::filter(date == timeline_date) |>
             dplyr::mutate(band = factor(band, levels = bands)) |>
             dplyr::arrange(band)
-        
+
         # process files by `fid` (assuming 3 bands per fid)
         vrt_files <- dplyr::group_by(tiles_in_date, .data[["fid"]]) |>
             dplyr::group_map(function(group_fid, key) {
                 # define vrt file path
                 vrt_file <- fs::path(paste0(fs::file_temp(), ".vrt"))
-                
+
                 # create vrt
                 sf::gdal_utils(
                     util = "buildvrt",
@@ -240,18 +240,18 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                     destination = vrt_file,
                     options = c("-separate")
                 )
-                
+
                 # return!
                 vrt_file
             }) |>
             unlist()
-        
+
         # define vrt list file
         vrt_files_lst <- fs::file_temp(ext = "txt")
-        
+
         # write vrt files to list file
         readr::write_lines(vrt_files, file = vrt_files_lst)
-        
+
         # build vrt (using system as sf was raising errors)
         vrt_merged <- fs::file_temp(ext = "vrt")
 
@@ -262,7 +262,7 @@ cube_to_rgb_mosaic_bdc <- function(cube,
             vrt_merged,
             sep = " "
         ))
-        
+
         # create tif file
         sf::gdal_utils(
             util = "translate",
@@ -288,7 +288,7 @@ cube_to_rgb_mosaic_bdc <- function(cube,
             ),
             quiet = FALSE
         )
-        
+
         # warp
         if (!is.null(roi_file)) {
             sf::gdal_utils(
@@ -312,13 +312,13 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                 quiet = FALSE
             )
         }
-        
+
         # create mbtiles
         if (mbtiles) {
             mosaic_mbtiles <- output_mosaic_complete_dir / paste0(timeline_date, ".mbtiles")
             system(paste(
                 "gdal_translate -of MBTILES",
-                tmp_mosaic_file,
+                mosaic_file,
                 mosaic_mbtiles,
                 sep = " "
             ))
@@ -326,11 +326,11 @@ cube_to_rgb_mosaic_bdc <- function(cube,
             mosaic_file <- mosaic_mbtiles
         }
         system(paste("gdaladdo -r average ", mosaic_file, "2 4 8 16 32", sep = " "))
-        
+
         # return
         mosaic_file
     })
-    
+
     # return!
     return(mosaic_files)
 }
