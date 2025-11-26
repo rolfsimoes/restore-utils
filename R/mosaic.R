@@ -296,7 +296,6 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                 source = mosaic_file,
                 destination = mosaic_file,
                 options = c(
-                    "-dstalpha",
                     "-cutline", roi_file,
                     "-overwrite",
                     "-crop_to_cutline",
