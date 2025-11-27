@@ -291,10 +291,11 @@ cube_to_rgb_mosaic_bdc <- function(cube,
 
         # warp
         if (!is.null(roi_file)) {
+            mosaic_cropped <- output_mosaic_complete_dir / paste0(timeline_date, "-crop.tif")
             sf::gdal_utils(
                 util = "warp",
                 source = mosaic_file,
-                destination = mosaic_file,
+                destination = mosaic_cropped,
                 options = c(
                     "-cutline", roi_file,
                     "-overwrite",
@@ -309,6 +310,12 @@ cube_to_rgb_mosaic_bdc <- function(cube,
                     "GDAL_CACHEMAX" = "4096"
                 ),
                 quiet = FALSE
+            )
+
+            # Move files
+            fs::file_move(
+                path     = mosaic_cropped,
+                new_path = mosaic_file
             )
         }
 
