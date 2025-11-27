@@ -274,8 +274,7 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
             # Build reclassification expression
             rules_expression <- bquote(
                 list(
-                    "Vegetação Nativa Antiga" = cube == "Vegetação Nativa",
-                    "Vegetação Nativa"        = mask == "Vegetação Nativa"
+                    "Vegetação Nativa" = cube == "Vegetação Nativa" | mask == "Vegetação Nativa"
                 )
             )
 
