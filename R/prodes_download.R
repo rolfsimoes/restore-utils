@@ -173,7 +173,7 @@ download_prodes <- function(year, output_dir, version = "v2") {
 
         # Define temporary file
         raster_file_out <- stringr::str_replace(
-            raster_file, "v1.tif", "v1-cropped.tif"
+            raster_file, "v1.tif*", "v1-cropped.tif"
         )
 
         raster_object <- terra::rast(raster_file)
