@@ -76,7 +76,13 @@
         dplyr::mutate(
             file      = output_dir / .data[["name"]],
             file_ext  = ifelse(fs::path_ext(.data[["name"]]) == "qml", "style", "raster"),
-            file_sits = output_dir / .terraclass_file_sits_name(year, ext = fs::path_ext(.data[["name"]]))
+            file_sits = output_dir / .terraclass_file_sits_name(
+                year,
+                ext = (
+                    fs::path_ext(.data[["name"]]) |>
+                        stringr::str_replace("tiff", "tif")
+                )
+            )
         ) |>
         dplyr::mutate(
             file_available = fs::file_exists(.data[["file_sits"]])
@@ -173,7 +179,7 @@ download_prodes <- function(year, output_dir, version = "v2") {
 
         # Define temporary file
         raster_file_out <- stringr::str_replace(
-            raster_file, "v1.tif*", "v1-cropped.tif"
+            raster_file, "v1.tif", "v1-cropped.tif"
         )
 
         raster_object <- terra::rast(raster_file)
