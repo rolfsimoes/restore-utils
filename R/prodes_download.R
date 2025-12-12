@@ -1,6 +1,7 @@
 
 .prodes_files <- function() {
     files <- c(
+        "https://www.dropbox.com/scl/fi/dfb8f8q7ebetlc4g6ez6n/prodes_amazonia_legal_2024.zip?rlkey=ue9n4i5gsqyjp3jmpw9jeos64&dl=1",
         "https://www.dropbox.com/scl/fi/qfbx8cco2mv13ysutestq/prodes_amazonia_2024.zip?rlkey=w6bhzqpenx7s29zhxxa6reeio&dl=1",
         "https://www.dropbox.com/scl/fi/w9982bmhln4oincvg3hej/prodes_amazonia_legal_2000.zip?rlkey=apjy1uyu3u8uyjyv5dd40la6q&dl=1",
         "https://www.dropbox.com/scl/fi/jz1vzmohcoqxlqmj8f9wi/prodes_amazonia_legal_2001.zip?rlkey=sx8yujl1f46a5q8jweyyx3qvk&dl=1",
@@ -14,13 +15,15 @@
 
     tibble::tibble(
         file = files,
-        year = c(2024, 2000:2007)
+        type = c("nf", rep("map", 9)),
+        year = c(2024, 2024, 2000:2007)
     )
 }
 
-.prodes_file_metadata <- function(year) {
+.prodes_file_metadata <- function(year, type = "map") {
     file_selected <- .prodes_files() |>
-        dplyr::filter(.data[["year"]] == !!year)
+        dplyr::filter(.data[["year"]] == !!year) |>
+        dplyr::filter(.data[["type"]] == !!type)
 
     # Sanity check: We need to have one file per year
     if (nrow(file_selected) != 1) {
@@ -42,9 +45,9 @@
         stringr::str_replace("EXT", ext)
 }
 
-.prodes_download <- function(year, output_dir) {
+.prodes_download <- function(year, output_dir, type = "map") {
     # Get file metadata of the selected file year
-    prd_year_file <- .prodes_file_metadata(year = year)
+    prd_year_file <- .prodes_file_metadata(year = year, type = type)
 
     # Define output dir
     output_file <- fs::path(output_dir) / .prodes_file_zip(prd_year_file)
@@ -118,31 +121,7 @@
     })
 }
 
-#' @export
-download_prodes <- function(year, output_dir, version = "v2") {
-    # Transform output dir object
-    output_dir <- fs::path(output_dir)
-
-    # Complete output dir
-    output_dir <- output_dir / version / year
-
-    # Create output dir
-    fs::dir_create(output_dir)
-
-    # Download year file
-    output_file <- .prodes_download(year = year, output_dir = output_dir)
-
-    # Extract files from zip
-    extracted_files <- .prodes_extract_files(year       = year,
-                                             file       = output_file,
-                                             output_dir = output_dir)
-
-    # Return files reference
-    # (remove `processed` flag as it is only used in internal routines)
-    dplyr::select(extracted_files, -.data[["processed"]])
-}
-
-.crop_prodes <- function(year, region_id, version) {
+.crop_prodes <- function(year, region_id, version, type = "map") {
     # Define output dir
     output_dir <- .prodes_dir(year = year, version = version)
 
@@ -150,7 +129,7 @@ download_prodes <- function(year, output_dir, version = "v2") {
     fs::dir_create(output_dir)
 
     # Download year file
-    output_file <- .prodes_download(year = year, output_dir = output_dir)
+    output_file <- .prodes_download(year = year, output_dir = output_dir, type = type)
 
     # Extract files from zip
     extracted_files <- .prodes_extract_files(year       = year,
@@ -213,7 +192,97 @@ download_prodes <- function(year, output_dir, version = "v2") {
 }
 
 #' @export
-prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 120, version = "v2", prodes_loader = NULL, exclude_mask_na = FALSE, nonforest_mask = TRUE) {
+download_prodes <- function(year, output_dir, version = "v2") {
+    # Transform output dir object
+    output_dir <- fs::path(output_dir)
+
+    # Complete output dir
+    output_dir <- output_dir / version / year
+
+    # Create output dir
+    fs::dir_create(output_dir)
+
+    # Download year file
+    output_file <- .prodes_download(year = year, output_dir = output_dir)
+
+    # Extract files from zip
+    extracted_files <- .prodes_extract_files(year       = year,
+                                             file       = output_file,
+                                             output_dir = output_dir)
+
+    # Return files reference
+    # (remove `processed` flag as it is only used in internal routines)
+    dplyr::select(extracted_files, -.data[["processed"]])
+}
+
+
+#' @export
+prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 120, version = "nf", prodes_loader = NULL) {
+    if (year != 2024) {
+        cli::cli_abort("Invalid year. Only 2024 is supported")
+    }
+
+    # Define current year
+    year <- 2024
+
+    # Define output dir
+    output_dir <- .prodes_dir(version = version, year = year)
+
+    # Check if output file already exist
+    output_file <- output_dir / .prodes_file_sits_name(year = year, ext = "tif")
+
+    if (fs::file_exists(output_file)) {
+        return(NULL)
+    }
+
+    # Crop raster
+    .crop_prodes(year = year, region_id = region_id, version = version, type = "nf")
+
+    # Define loader
+    if (is.null(prodes_loader)) {
+        prodes_loader <- get(paste0("load_prodes_", year))
+    }
+
+    # Load PRODES
+    prodes_year <- prodes_loader(
+        version = version,
+        multicores = multicores,
+        memsize = memsize
+    )
+
+    # Generate NF mask
+    prodes_nf_mask <- sits::sits_reclassify(
+        cube       = prodes_year,
+        mask       = prodes_year,
+        rules      = list(
+            "OTHERS" = cube != "NAO FLORESTA"
+        ),
+        multicores = multicores,
+        memsize    = memsize,
+        output_dir = output_dir,
+        version    = "nf-mask"
+    )
+
+    # Get files
+    file_old <- prodes_year[["file_info"]][[1]][["path"]]
+    file_new <- prodes_nf_mask[["file_info"]][[1]][["path"]]
+
+    # Move files
+    fs::file_move(
+        path     = file_new,
+        new_path = file_old
+    )
+
+    # Remove old .rds (created by loader)
+    rds_file <- fs::path(fs::path_dir(file_old)) / "prodes.rds"
+
+    if (fs::file_exists(rds_file)) {
+        fs::file_delete(rds_file)
+    }
+}
+
+#' @export
+prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 120, version = "v2", prodes_loader = NULL, exclude_mask_na = FALSE, nonforest_mask = TRUE, nonforest_complete = TRUE) {
     # Arrange years for processing using PRODES methodology
     years <- sort(years, decreasing = TRUE)
 
@@ -222,6 +291,17 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
         message(
             paste("Forest masks from PRODES 2000 to 2007 wont be fixed",
                   "once 2008 was not provided.")
+        )
+    }
+
+    if (nonforest_complete) {
+        # Mask fixed in 2024 as this is the reference in the restore+ project
+        prepare_prodes_nf(
+            region_id  = region_id,
+            year       = 2024,
+            multicores = multicores,
+            memsize    = memsize,
+            version    = "nf"
         )
     }
 
@@ -261,7 +341,8 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
             memsize = memsize,
             prodes_loader = prodes_loader,
             exclude_mask_na = exclude_mask_na,
-            nonforest_mask = nonforest_mask
+            nonforest_mask = nonforest_mask,
+            nonforest_complete = nonforest_complete
         )
 
         # Apply forest fixing from 2000 to 2007

@@ -151,7 +151,8 @@ prodes_generate_mask <- function(target_year,
                                  memsize = 120,
                                  prodes_loader = NULL,
                                  exclude_mask_na = FALSE,
-                                 nonforest_mask = FALSE) {
+                                 nonforest_mask = FALSE,
+                                 nonforest_complete = FALSE) {
 
     cli::cli_inform("> Processing {target_year}")
 
@@ -222,6 +223,36 @@ prodes_generate_mask <- function(target_year,
             version    = "v1"
         )
     ))
+
+    if (nonforest_complete) {
+        prodes_nf_complete <- load_prodes_nf(
+            multicores = multicores,
+            memsize = memsize
+        )
+
+        prodes_nf_mask <- sits::sits_reclassify(
+            cube            = prodes_forest_mask,
+            mask            = prodes_nf_complete,
+            rules           = list(
+                "NAO FLORESTA" = mask == "NAO FLORESTA"
+            ),
+            multicores      = multicores,
+            memsize         = memsize,
+            output_dir      = output_dir,
+            exclude_mask_na = exclude_mask_na,
+            version         = "nonforest-complete"
+        )
+
+        # Get files
+        file_new <- prodes_nf_mask[["file_info"]][[1]][["path"]]
+        file_old <- prodes_forest_mask[["file_info"]][[1]][["path"]]
+
+        # Move files
+        fs::file_move(
+            path     = file_new,
+            new_path = file_old
+        )
+    }
 
     # If required, mask non-forest
     if (nonforest_mask) {
@@ -315,6 +346,37 @@ prodes_generate_mask <- function(target_year,
     # Return result!
     return(prodes_forest_mask)
 }
+
+#' @export
+load_prodes_nf <- function(version = "nf", multicores = 32, memsize = 120) {
+    prodes_dir <- .prodes_dir(version = version, year = 2024)
+    prodes_rds <- .prodes_rds(prodes_dir)
+
+    if (fs::file_exists(prodes_rds)) {
+
+        prodes <- readRDS(prodes_rds)
+
+    } else {
+        # Recover the PRODES classified cube
+        prodes <- sits::sits_cube(
+            source = "MPC",
+            collection = "LANDSAT-C2-L2",
+            data_dir = prodes_dir,
+            multicores = multicores,
+            memsize = memsize,
+            parse_info = c("product", "sensor",
+                           "tile", "start_date", "end_date",
+                           "band", "version"),
+            bands = "class",
+            labels = c("101" = "NAO FLORESTA",
+                       "103" = "OUTROS")
+        )
+
+        saveRDS(prodes, prodes_rds)
+    }
+    prodes
+}
+
 
 #' @export
 load_prodes_2000 <- function(version = "v2", multicores = 32, memsize = 120) {
