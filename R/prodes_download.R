@@ -121,6 +121,52 @@
     })
 }
 
+.prodes_nf_extras_mask <- function(year, multicores, memsize, output_dir) {
+    # Define output directory
+    output_dir_nonforest <- output_dir / "non-forest" / year
+
+    # Create output directory
+    fs::dir_create(output_dir_nonforest)
+
+    # Check non-forest file
+    nonforst_file <- .prodes_nonforest_output_file(
+        year       = year,
+        output_dir = output_dir_nonforest
+    )
+
+    if (!fs::file_exists(nonforst_file)) {
+        # Download non-forest data
+        prodes_nonforest <- .prodes_nonforest_download(output_dir_nonforest)
+
+        # Filter by year
+        prodes_nonforest <- prodes_nonforest |>
+            dplyr::filter(.data[["year"]] <= !!year)
+
+        # Rasterize non-forest
+        .prodes_nonforest_rasterize(
+            prodes        = prodes_nonforest,
+            year          = year,
+            output_dir    = output_dir_nonforest,
+            class_id      = 1 # as this is yearly - it is ok to keep 1
+        )
+    }
+
+    # Load non-forest as cube
+    sits::sits_cube(
+        source     = "MPC",
+        collection = "LANDSAT-C2-L2",
+        bands      = "class",
+        tiles      = "MOSAIC",
+        multicores = multicores,
+        memsize    = memsize,
+        data_dir   = output_dir_nonforest,
+        labels     = c(
+            "1"    = "DeforestationInNonForest",
+            "2"    = "Others"
+        )
+    )
+}
+
 .crop_prodes <- function(year, region_id, version, type = "map") {
     # Define output dir
     output_dir <- .prodes_dir(year = year, version = version)
@@ -215,7 +261,6 @@ download_prodes <- function(year, output_dir, version = "v2") {
     dplyr::select(extracted_files, -.data[["processed"]])
 }
 
-
 #' @export
 prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 120, version = "nf", prodes_loader = NULL) {
     if (year != 2024) {
@@ -243,6 +288,14 @@ prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 
         prodes_loader <- get(paste0("load_prodes_", year))
     }
 
+    # Load Extra NF mask
+    prodes_nf_extras <- .prodes_nf_extras_mask(
+        year = year,
+        multicores = multicores,
+        memsize = memsize,
+        output_dir = output_dir
+    )
+
     # Load PRODES
     prodes_year <- prodes_loader(
         version = version,
@@ -261,6 +314,20 @@ prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 
         memsize    = memsize,
         output_dir = output_dir,
         version    = "nf-mask"
+    )
+
+    prodes_nf_mask <- sits::sits_reclassify(
+        cube       = prodes_nf_mask,
+        mask       = prodes_nf_extras,
+        rules      = list(
+            "NAO FLORESTA" = (
+                cube == "NAO FLORESTA" | mask == "DeforestationInNonForest"
+            )
+        ),
+        multicores = multicores,
+        memsize    = memsize,
+        output_dir = output_dir,
+        version    = "nf-mask-extras"
     )
 
     # Get files
