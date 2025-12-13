@@ -288,14 +288,6 @@ prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 
         prodes_loader <- get(paste0("load_prodes_", year))
     }
 
-    # Load Extra NF mask
-    prodes_nf_extras <- .prodes_nf_extras_mask(
-        year = year,
-        multicores = multicores,
-        memsize = memsize,
-        output_dir = output_dir
-    )
-
     # Load PRODES
     prodes_year <- prodes_loader(
         version = version,
@@ -316,19 +308,33 @@ prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 
         version    = "nf-mask"
     )
 
-    prodes_nf_mask <- sits::sits_reclassify(
-        cube       = prodes_nf_mask,
-        mask       = prodes_nf_extras,
-        rules      = list(
-            "NAO FLORESTA" = (
-                cube == "NAO FLORESTA" | mask == "DeforestationInNonForest"
-            )
-        ),
-        multicores = multicores,
-        memsize    = memsize,
-        output_dir = output_dir,
-        version    = "nf-mask-extras"
-    )
+    # Region 4 contains the "parallel 44", which requires special handling because
+    # "amazonia legal data" does not include deforestation in non-forest areas.
+    # Therefore, we must incorporate this data using available non-forest
+    # deforestation data.
+    if (region_id == 4) {
+        # Load Extra NF mask
+        prodes_nf_extras <- .prodes_nf_extras_mask(
+            year = year,
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir
+        )
+
+        prodes_nf_mask <- sits::sits_reclassify(
+            cube       = prodes_nf_mask,
+            mask       = prodes_nf_extras,
+            rules      = list(
+                "NAO FLORESTA" = (
+                    cube == "NAO FLORESTA" | mask == "DeforestationInNonForest"
+                )
+            ),
+            multicores = multicores,
+            memsize    = memsize,
+            output_dir = output_dir,
+            version    = "nf-mask-extras"
+        )
+    }
 
     # Get files
     file_old <- prodes_year[["file_info"]][[1]][["path"]]
