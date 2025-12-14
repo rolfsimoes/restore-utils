@@ -355,7 +355,18 @@ prepare_prodes_nf <- function(region_id, year = 2024, multicores = 1, memsize = 
 }
 
 #' @export
-prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 120, version = "v2", prodes_loader = NULL, exclude_mask_na = FALSE, nonforest_mask = TRUE, nonforest_complete = TRUE) {
+prepare_prodes <- function(
+    region_id,
+    years = 2024,
+    multicores = 1,
+    memsize = 120,
+    version = "v2",
+    prodes_loader = NULL,
+    exclude_mask_na = FALSE,
+    nonforest_mask = TRUE,
+    nonforest_complete = TRUE,
+    fix_pre_aggregation_prodes = TRUE
+) {
     # Arrange years for processing using PRODES methodology
     years <- sort(years, decreasing = TRUE)
 
@@ -419,7 +430,7 @@ prepare_prodes <- function(region_id, years = 2024, multicores = 1, memsize = 12
         )
 
         # Apply forest fixing from 2000 to 2007
-        if (year <= 2007 && 2008 %in% years) {
+        if (fix_pre_aggregation_prodes || (year <= 2007 && 2008 %in% years)) {
             prodes_2008 <- load_prodes_2008(
                 version = version,
                 multicores = multicores,
