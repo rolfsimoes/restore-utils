@@ -371,10 +371,11 @@ prepare_prodes <- function(
     years <- sort(years, decreasing = TRUE)
 
     # Verify if 2008 is into years list with years before 2007
-    if (!2008 %in% years && any(years <= 2007)) {
-        message(
-            paste("Forest masks from PRODES 2000 to 2007 wont be fixed",
-                  "once 2008 was not provided.")
+    if (!2008 %in% years && any(years <= 2007) && !fix_pre_aggregation_prodes) {
+        cli::cli_alert_info(
+            paste0("Forest masks from PRODES 2000 to 2007 wont be fixed ",
+                  "once 2008 was not provided. Please process 2008 or use ",
+                  "`fix_pre_aggregation_prodes` if you already have it")
         )
     }
 
