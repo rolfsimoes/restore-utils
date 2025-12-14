@@ -17,5 +17,4 @@ options(
         "--max-time", "2000",
         "--verbose"
     )
-    #"download.file.method" = "libcurl"
 )
