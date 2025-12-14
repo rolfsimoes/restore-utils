@@ -3,6 +3,7 @@
 NULL
 
 options(
+    "download.file.method" = "curl",
     "download.file.extra" = c(
         "-L",                    # follow redirects
         "--fail",                # non-2xx => error
@@ -13,7 +14,7 @@ options(
         "--retry-all-errors",    # retry on all failure types
         "--retry-connrefused",
         "--connect-timeout", "15",
-        "--max-time", "720",
+        "--max-time", "2000",
         "--verbose"
     )
     #"download.file.method" = "libcurl"
