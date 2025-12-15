@@ -431,7 +431,7 @@ prepare_prodes <- function(
         )
 
         # Apply forest fixing from 2000 to 2007
-        if (fix_pre_aggregation_prodes || (year <= 2007 && 2008 %in% years)) {
+        if ((fix_pre_aggregation_prodes && year <= 2007) || (year <= 2007 && 2008 %in% years)) {
             cli::cli_alert_info("Fixing pre-aggregation PRODES")
 
             prodes_2008 <- load_prodes_2008(
