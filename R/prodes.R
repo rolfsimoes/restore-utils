@@ -174,7 +174,8 @@ prodes_generate_mask <- function(target_year,
     #   deforestation years = 2024 – 2017
     # All of these deforestation years correspond to forest in 2016.
     deforestation_years <- paste0("d", (target_year + 1):2024)
-    residual_years <- paste0("r", (target_year + 1):2024)
+    residual_future_years <- paste0("r", (target_year + 1):2024)
+    residual_past_years <- paste0("r", 2000:(target_year - 1))
 
     if (target_year == 2000) {
         deforestation_years <- paste0("d", target_year:2024)
@@ -207,7 +208,8 @@ prodes_generate_mask <- function(target_year,
     rules_expression <- bquote(
         list(
             "Vegetação Nativa" = cube == "Vegetação Nativa" |
-                cube %in% c(.(deforestation_years), .(residual_years))
+                cube %in% c(.(deforestation_years), .(residual_future_years)),
+            "Others" = cube %in% .(residual_past_years)
         )
     )
 
