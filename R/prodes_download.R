@@ -10,7 +10,7 @@
         "https://www.dropbox.com/scl/fi/jkp1fig3jd8kfzcmjxcky/prodes_amazonia_2004.zip?rlkey=i7vjwadaxn3h0dmfqayjrc412&dl=1",
         "https://www.dropbox.com/scl/fi/5aqc18gpgct5h01o01rq9/prodes_amazonia_2005.zip?rlkey=gps01tdrk6g364pxng140qk0q&dl=1",
         "https://www.dropbox.com/scl/fi/r689lofabfc5s0d14e7eg/prodes_amazonia_2006.zip?rlkey=ymovmc7m3nwuxs3bj36xoi6vt&dl=1",
-        "https://www.dropbox.com/scl/fi/5pu9ybgmyourptq2hjxl2/prodes_amazonia_2007.zip?rlkey=5jue0z2yujfcgq2s4ldtefj3a&dl=1"
+        "https://www.dropbox.com/scl/fi/f8npqabawnrc949t7tu4j/prodes_amazonia_2007.zip?rlkey=nkvglfcbe8of8dmi15vs0f5gm&dl=1"
     )
 
     tibble::tibble(
