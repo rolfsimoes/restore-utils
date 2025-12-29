@@ -345,6 +345,9 @@ prodes_generate_mask <- function(target_year,
         cli::cli_inform("> Processing {target_year} > Finalized non-forest mask")
     }
 
+    # Save reference
+    saveRDS(prodes_forest_mask, output_dir / "cube.rds")
+
     # Return result!
     return(prodes_forest_mask)
 }
