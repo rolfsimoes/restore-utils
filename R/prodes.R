@@ -190,6 +190,13 @@ prodes_generate_mask <- function(target_year,
         }
     }
 
+    # Define final cube version
+    initial_cube_version <- "v1"
+
+    if (target_year <= 2007) {
+        initial_cube_version <- "v1-base"
+    }
+
     # Load PRODES cube
     prodes_cube <- prodes_loader(
         version    = version,
@@ -222,7 +229,7 @@ prodes_generate_mask <- function(target_year,
             memsize    = memsize,
             output_dir = output_dir,
             exclude_mask_na = exclude_mask_na,
-            version    = "v1"
+            version    = initial_cube_version
         )
     ))
 
@@ -343,6 +350,19 @@ prodes_generate_mask <- function(target_year,
         prodes_forest_mask <- prodes_forest_mask_new
 
         cli::cli_inform("> Processing {target_year} > Finalized non-forest mask")
+    }
+
+    # Rename file for 2007 or earlier
+    if (target_year <= 2007) {
+        # Get files
+        file_old <- prodes_forest_mask[["file_info"]][[1]][["path"]]
+        file_new <- stringr::str_replace(file_old, initial_cube_version, "v1")
+
+        # Move files
+        fs::file_move(
+            path     = file_old,
+            new_path = file_new
+        )
     }
 
     # Save reference
