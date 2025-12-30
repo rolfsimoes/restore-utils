@@ -3,14 +3,14 @@
     files <- c(
         "https://www.dropbox.com/scl/fi/dfb8f8q7ebetlc4g6ez6n/prodes_amazonia_legal_2024.zip?rlkey=ue9n4i5gsqyjp3jmpw9jeos64&dl=1",
         "https://www.dropbox.com/scl/fi/qfbx8cco2mv13ysutestq/prodes_amazonia_2024.zip?rlkey=w6bhzqpenx7s29zhxxa6reeio&dl=1",
-        "https://www.dropbox.com/scl/fi/fbbylq0og51aq1ncnkh0x/prodes_amazonia_2000.zip?rlkey=573c83f5aso1ni8g5rhld0lk4&dl=1",
-        "https://www.dropbox.com/scl/fi/oy18zccpmfll60p0o3lde/prodes_amazonia_2001.zip?rlkey=gq60girw5zlqr5p66hgf3xair&dl=1",
-        "https://www.dropbox.com/scl/fi/z2bpknfyhifatfkkweteq/prodes_amazonia_2002.zip?rlkey=28bax5j9jzkkxsiemrmqukyfg&dl=1",
-        "https://www.dropbox.com/scl/fi/qzfjddp8kh8dh8wv7d7k6/prodes_amazonia_2003.zip?rlkey=mv8x4mvg1k1j1sohxffi8zxst&dl=1",
-        "https://www.dropbox.com/scl/fi/jkp1fig3jd8kfzcmjxcky/prodes_amazonia_2004.zip?rlkey=i7vjwadaxn3h0dmfqayjrc412&dl=1",
-        "https://www.dropbox.com/scl/fi/5aqc18gpgct5h01o01rq9/prodes_amazonia_2005.zip?rlkey=gps01tdrk6g364pxng140qk0q&dl=1",
-        "https://www.dropbox.com/scl/fi/r689lofabfc5s0d14e7eg/prodes_amazonia_2006.zip?rlkey=ymovmc7m3nwuxs3bj36xoi6vt&dl=1",
-        "https://www.dropbox.com/scl/fi/5pu9ybgmyourptq2hjxl2/prodes_amazonia_2007.zip?rlkey=5jue0z2yujfcgq2s4ldtefj3a&dl=1"
+        "https://www.dropbox.com/scl/fi/gextbnv5xchbrgtsee65w/prodes_amazonia_2000.zip?rlkey=wqsewz83gcybl2u5qakdtzja8&dl=1",
+        "https://www.dropbox.com/scl/fi/6lg8ec2d41q97b8f67gfp/prodes_amazonia_2001.zip?rlkey=sjn0iag7wj1umeftv43me1dvl&dl=1",
+        "https://www.dropbox.com/scl/fi/6rh8obv0qha13yl6ru6nu/prodes_amazonia_2002.zip?rlkey=5bmox0l191dqh8mrdslidhyed&dl=1",
+        "https://www.dropbox.com/scl/fi/cfbte1hfquo409ke1xj7p/prodes_amazonia_2003.zip?rlkey=4rwv6xhi9rr83sskng3kqn4zq&dl=1",
+        "https://www.dropbox.com/scl/fi/vjh4nss6hcd5onm73cp2i/prodes_amazonia_2004.zip?rlkey=v0nh8pbb28v4sl05ze6vxw1wg&dl=1",
+        "https://www.dropbox.com/scl/fi/a90qrbsf34sftu06w2vp1/prodes_amazonia_2005.zip?rlkey=l6o9ceuntl5bim46py5hk0hyb&dl=1",
+        "https://www.dropbox.com/scl/fi/4tfrhm4q7vsdor1j8tt3a/prodes_amazonia_2006.zip?rlkey=ucq604mtgc3z3cjnut2zd8e36&dl=1",
+        "https://www.dropbox.com/scl/fi/ufr60nf6gs54exzsp28r2/prodes_amazonia_2007.zip?rlkey=m56evjijjhlc05xz0un5envss&dl=1"
     )
 
     tibble::tibble(
