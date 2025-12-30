@@ -3,7 +3,7 @@
     files <- c(
         "https://www.dropbox.com/scl/fi/dfb8f8q7ebetlc4g6ez6n/prodes_amazonia_legal_2024.zip?rlkey=ue9n4i5gsqyjp3jmpw9jeos64&dl=1",
         "https://www.dropbox.com/scl/fi/qfbx8cco2mv13ysutestq/prodes_amazonia_2024.zip?rlkey=w6bhzqpenx7s29zhxxa6reeio&dl=1",
-        "https://www.dropbox.com/scl/fi/gextbnv5xchbrgtsee65w/prodes_amazonia_2000.zip?rlkey=wqsewz83gcybl2u5qakdtzja8&dl=1",
+        "https://www.dropbox.com/scl/fi/r5rza5i0284p3682itwfh/prodes_amazonia_2000.zip?rlkey=jkwyj56clsy92sqd76glxf0wp&dl=1",
         "https://www.dropbox.com/scl/fi/6lg8ec2d41q97b8f67gfp/prodes_amazonia_2001.zip?rlkey=sjn0iag7wj1umeftv43me1dvl&dl=1",
         "https://www.dropbox.com/scl/fi/6rh8obv0qha13yl6ru6nu/prodes_amazonia_2002.zip?rlkey=5bmox0l191dqh8mrdslidhyed&dl=1",
         "https://www.dropbox.com/scl/fi/cfbte1hfquo409ke1xj7p/prodes_amazonia_2003.zip?rlkey=4rwv6xhi9rr83sskng3kqn4zq&dl=1",
