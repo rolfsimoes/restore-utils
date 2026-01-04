@@ -174,7 +174,8 @@ prodes_generate_mask <- function(target_year,
     #   deforestation years = 2024 – 2017
     # All of these deforestation years correspond to forest in 2016.
     deforestation_years <- paste0("d", (target_year + 1):2024)
-    residual_years <- paste0("r", (target_year + 1):2024)
+    residual_future_years <- paste0("r", (target_year + 1):2024)
+    residual_past_years <- paste0("r", 2000:(target_year - 1))
 
     if (target_year == 2000) {
         deforestation_years <- paste0("d", target_year:2024)
@@ -187,6 +188,13 @@ prodes_generate_mask <- function(target_year,
         if (target_year <= 2007) {
             prodes_loader <- get(paste0("load_prodes_", target_year))
         }
+    }
+
+    # Define final cube version
+    initial_cube_version <- "v1"
+
+    if (target_year <= 2007) {
+        initial_cube_version <- "v1-base"
     }
 
     # Load PRODES cube
@@ -207,7 +215,8 @@ prodes_generate_mask <- function(target_year,
     rules_expression <- bquote(
         list(
             "Vegetação Nativa" = cube == "Vegetação Nativa" |
-                cube %in% c(.(deforestation_years), .(residual_years))
+                cube %in% c(.(deforestation_years), .(residual_future_years)),
+            "Others" = cube %in% .(residual_past_years)
         )
     )
 
@@ -220,7 +229,7 @@ prodes_generate_mask <- function(target_year,
             memsize    = memsize,
             output_dir = output_dir,
             exclude_mask_na = exclude_mask_na,
-            version    = "v1"
+            version    = initial_cube_version
         )
     ))
 
@@ -342,6 +351,22 @@ prodes_generate_mask <- function(target_year,
 
         cli::cli_inform("> Processing {target_year} > Finalized non-forest mask")
     }
+
+    # Rename file for 2007 or earlier
+    if (target_year <= 2007) {
+        # Get files
+        file_old <- prodes_forest_mask[["file_info"]][[1]][["path"]]
+        file_new <- stringr::str_replace(file_old, initial_cube_version, "v1")
+
+        # Move files
+        fs::file_move(
+            path     = file_old,
+            new_path = file_new
+        )
+    }
+
+    # Save reference
+    saveRDS(prodes_forest_mask, output_dir / "cube.rds")
 
     # Return result!
     return(prodes_forest_mask)
