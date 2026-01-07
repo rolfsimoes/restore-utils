@@ -26,7 +26,7 @@ prepare_water_mask <- function(region_id, reference_year = 2020, multicores = 36
     output_file <- fs::path_abs(output_dir / output_file)
 
     # Define eco region SF
-    eco_region_roi <- roi_ecoregions(
+    eco_region_roi <- roi_amazon_regions(
         region_id  = region_id,
         crs        = "EPSG:4326",
         as_union   = TRUE,

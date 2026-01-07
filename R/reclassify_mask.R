@@ -24,7 +24,7 @@ reclassify_mask <- function(rules, region_id, mask_version, classification_versi
     )
 
     # Define eco region roi
-    eco_region_roi <- roi_ecoregions(
+    eco_region_roi <- roi_amazon_regions(
         region_id  = region_id,
         crs        = crs_bdc(),
         as_union   = TRUE,

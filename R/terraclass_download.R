@@ -157,7 +157,7 @@ prepare_terraclass <- function(years, region_id, fix_non_observed = TRUE, fix_ot
         # If no, crop raster using the eco region selected by the user
         if (!are_files_finished) {
             # Get eco region polygon
-            eco_region_roi <- roi_ecoregions(
+            eco_region_roi <- roi_amazon_regions(
                 region_id  = region_id,
                 crs        = "EPSG:4674",
                 as_union   = TRUE,
