@@ -45,3 +45,7 @@ C_trajectory_urban_analysis <- function(data, mask, urban_class_id, forest_class
     .Call(`_restoreutils_C_trajectory_urban_analysis`, data, mask, urban_class_id, forest_class_id, forest_class_id_mask)
 }
 
+C_trajectory_vs_analysis <- function(data, vs_class, pasture_class) {
+    .Call(`_restoreutils_C_trajectory_vs_analysis`, data, vs_class, pasture_class)
+}
+

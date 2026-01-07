@@ -1381,3 +1381,169 @@ reclassify_rule27_temporal_trajectory_perene_mask <- function(files,
     # Return!
     return(file_out)
 }
+
+#' @export
+reclassify_rule28_secundary_vegetation_tc <- function(cube, mask, multicores, memsize,
+                                                      output_dir, version, rarg_year, exclude_mask_na = FALSE) {
+    # build args for expression
+    terraclass_years <- c(2008, 2010, 2012, 2014, 2018, 2020, 2022)
+
+    if (rarg_year %in% terraclass_years) {
+        cube <- sits::sits_reclassify(
+            cube = cube,
+            mask = mask,
+            rules = list(
+                "vs_herbacea_pasture" = cube == "vegetacao_secundaria" & mask == "PASTAGEM HERBACEA"
+            ),
+            exclude_mask_na = exclude_mask_na,
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir,
+            version = version
+        )
+
+        cube <- sits::sits_reclassify(
+            cube = cube,
+            mask = mask,
+            rules = list(
+                "vs_pasture" = cube == "vegetacao_secundaria" & mask != "VEGETACAO NATURAL FLORESTAL SECUNDARIA"
+            ),
+            exclude_mask_na = exclude_mask_na,
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir,
+            version = version
+        )
+    }
+
+    .reclassify_save_rds(cube, output_dir, version)
+}
+
+#' @export
+reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
+                                                             year,
+                                                             vs_class_id,
+                                                             pasture_class_id,
+                                                             version,
+                                                             multicores,
+                                                             memsize,
+                                                             output_dir) {
+    # Create output directory
+    output_dir <- fs::path(output_dir)
+    fs::dir_create(output_dir)
+
+    # Define output file
+    out_filename <- .reclassify_sits_name(version, year)
+
+    file_out <- fs::path(output_dir) / out_filename
+    # If result already exists, return it!
+    if (file.exists(file_out)) {
+        return(file_out)
+    }
+    # The following functions define optimal parameters for parallel processing
+    rast_template <- sits:::.raster_open_rast(files)
+    image_size <- list(
+        nrows = sits:::.raster_nrows(rast_template),
+        ncols = sits:::.raster_ncols(rast_template)
+    )
+    # Get block size
+    block <- sits:::.raster_file_blocksize(sits:::.raster_open_rast(files))
+    # Check minimum memory needed to process one block
+    job_block_memsize <- sits:::.jobs_block_memsize(
+        block_size = sits:::.block_size(block = block, overlap = 0),
+        npaths = length(files),
+        nbytes = 8,
+        proc_bloat = sits:::.conf("processing_bloat")
+    )
+    # Update multicores parameter based on size of a single block
+    multicores <- sits:::.jobs_max_multicores(
+        job_block_memsize = job_block_memsize,
+        memsize = memsize,
+        multicores = multicores
+    )
+    # Update block parameter based on the size of memory and number of cores
+    block <- sits:::.jobs_optimal_block(
+        job_block_memsize = job_block_memsize,
+        block = block,
+        image_size = image_size,
+        memsize = memsize,
+        multicores = multicores
+    )
+    # Create chunks
+    chunks <- sits:::.chunks_create(
+        block = block,
+        overlap = 0,
+        image_size = image_size,
+        image_bbox = sits:::.bbox(
+            sits:::.raster_bbox(rast_template),
+            default_crs = terra::crs(rast_template)
+        )
+    )
+    # Update chunk to save extra information
+    chunks[["output_dir"]] <- output_dir
+    chunks[["files"]] <- rep(list(files), nrow(chunks))
+    chunks[["vs_class_id"]] <- vs_class_id
+    chunks[["pasture_class_id"]] <- pasture_class_id
+    # Start workers
+    sits:::.parallel_start(workers = multicores)
+    on.exit(sits:::.parallel_stop(), add = TRUE)
+    # Process data!
+    block_files <- sits:::.jobs_map_parallel_chr(chunks, function(chunk) {
+        # Get chunk block
+        block <- sits:::.block(chunk)
+        # Get extra context defined by restoreutils
+        output_dir <- chunk[["output_dir"]]
+        files <- chunk[["files"]][[1]]
+        vs_class_id <- chunk[["vs_class_id"]]
+        pasture_class_id <- chunk[["pasture_class_id"]]
+        # Define block file name / path
+        block_file <- sits:::.file_block_name(
+            pattern = tools::file_path_sans_ext(out_filename),
+            block = block,
+            output_dir = output_dir
+        )
+        # If block already exists, return it!
+        if (file.exists(block_file)) {
+            return(block_file)
+        }
+
+        # Read raster values
+        values <- sits:::.raster_read_rast(
+            files = files,
+            block = block
+        )
+        # Process data
+        values <- restoreutils:::C_trajectory_vs_analysis(
+            data          = values,
+            vs_class      = vs_class_id,
+            pasture_class = pasture_class_id
+        )
+        # Prepare and save results as raster
+        sits:::.raster_write_block(
+            files = block_file,
+            block = block,
+            bbox = sits:::.bbox(chunk),
+            values = values,
+            data_type = "INT1U",
+            missing_value = 255,
+            crop_block = NULL
+        )
+        # Free memory
+        gc()
+        # Returned block file
+        block_file
+    }, progress = TRUE)
+    # Merge raster blocks
+    sits:::.raster_merge_blocks(
+        out_files = file_out,
+        base_file = files,
+        block_files = block_files,
+        data_type = "INT1U",
+        missing_value = 255,
+        multicores = multicores
+    )
+    # Remove block files
+    unlink(block_files)
+    # Return!
+    return(file_out)
+}

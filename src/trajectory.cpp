@@ -14,10 +14,10 @@ NumericMatrix C_trajectory_transition_analysis(NumericMatrix data, int reference
     for (int i = 0; i < npixel; i++) {
         for (int j = 0; j + 2 < nyear; j += 3) {
 
-            bool valid_neihbor = data(i, j) == neighbor_class && data(i, j + 2) == neighbor_class;
+            bool valid_neighbor = data(i, j) == neighbor_class && data(i, j + 2) == neighbor_class;
             bool valid_class = data(i, j + 1) == reference_class;
 
-            if (valid_class && valid_neihbor) {
+            if (valid_class && valid_neighbor) {
                 data(i, j + 1) = neighbor_class;
 
                 // 9 means the last time step
@@ -171,7 +171,6 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 // [[Rcpp::export]]
 NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class) {
     int npixel = data.nrow();
-    int nyear = data.ncol();
 
     for (int i = 0; i < npixel; i++) {
         bool is_left_water   = data(i, 0) == water_class;
@@ -267,3 +266,22 @@ NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask
 
     return data;
 }
+
+// [[Rcpp::export]]
+NumericMatrix C_trajectory_vs_analysis(NumericMatrix data, int vs_class, int pasture_class) {
+    int npixel = data.nrow();
+
+    for (int i = 0; i < npixel; i++) {
+        bool is_left   = data(i, 0) == pasture_class;
+        bool is_middle = data(i, 1) == vs_class;
+        bool is_right  = data(i, 2) == pasture_class;
+
+        if (is_left && is_middle && is_right) {
+            // If middle is water, change to the first class.
+            data(i, 1) = data(i, 0);
+        }
+    }
+
+    return data;
+}
+
