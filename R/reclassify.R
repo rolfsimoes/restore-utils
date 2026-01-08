@@ -1399,7 +1399,7 @@ reclassify_rule28_secundary_vegetation_tc <- function(cube, mask, multicores, me
             multicores = multicores,
             memsize = memsize,
             output_dir = output_dir,
-            version = version
+            version = glue::glue("{version}-intermediate")
         )
 
         cube <- sits::sits_reclassify(
