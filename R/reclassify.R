@@ -1495,7 +1495,7 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
         output_dir <- chunk[["output_dir"]]
         files <- chunk[["files"]][[1]]
         vs_class_id <- chunk[["vs_class_id"]]
-        pasture_class_id <- chunk[["pasture_class_id"]]
+        pasture_class_id <- unlist(chunk[["pasture_class_id"]])
         # Define block file name / path
         block_file <- sits:::.file_block_name(
             pattern = tools::file_path_sans_ext(out_filename),
