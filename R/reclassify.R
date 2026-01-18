@@ -1523,7 +1523,7 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
             files = block_file,
             block = block,
             bbox = sits:::.bbox(chunk),
-            values = values,
+            values = values[, 2],
             data_type = "INT1U",
             missing_value = 255,
             crop_block = NULL
