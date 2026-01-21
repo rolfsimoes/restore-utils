@@ -133,14 +133,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_trajectory_water_analysis
-NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class);
-RcppExport SEXP _restoreutils_C_trajectory_water_analysis(SEXP dataSEXP, SEXP water_classSEXP) {
+NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map);
+RcppExport SEXP _restoreutils_C_trajectory_water_analysis(SEXP dataSEXP, SEXP water_classSEXP, SEXP target_class_mapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type water_class(water_classSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_trajectory_water_analysis(data, water_class));
+    Rcpp::traits::input_parameter< DataFrame >::type target_class_map(target_class_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_water_analysis(data, water_class, target_class_map));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -184,7 +185,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis, 2},
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask, 4},
     {"_restoreutils_C_trajectory_neighbor_majority_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis, 2},
-    {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 2},
+    {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 3},
     {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
     {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 4},
     {NULL, NULL, 0}

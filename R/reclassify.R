@@ -1051,6 +1051,7 @@ reclassify_rule23_pasture_deforestation_in_nonforest <- function(cube, mask, mul
 #' @export
 reclassify_rule24_temporal_water_consistency <- function(files,
                                                          water_class_id,
+                                                         target_class_map,
                                                          year,
                                                          version,
                                                          multicores,
@@ -1110,6 +1111,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["water_class_id"]] <- water_class_id
+    chunks[["target_class_map"]] <- target_class_map
     # Start workers
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
@@ -1121,6 +1123,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
         water_class_id <- chunk[["water_class_id"]]
+        target_class_map <- chunk[["target_class_map"]]
         # Define block file name / path
         block_file <- sits:::.file_block_name(
             pattern = tools::file_path_sans_ext(out_filename),
@@ -1136,7 +1139,8 @@ reclassify_rule24_temporal_water_consistency <- function(files,
         # Process data
         values <- restoreutils:::C_trajectory_water_analysis(
             data = values,
-            water_class = water_class_id
+            water_class = water_class_id,
+            target_class_map = target_class_map
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

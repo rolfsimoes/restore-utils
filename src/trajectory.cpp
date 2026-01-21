@@ -169,8 +169,12 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class) {
+NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map) {
     int npixel = data.nrow();
+    
+    // Extract source and target columns from DataFrame
+    IntegerVector source = target_class_map["source"];
+    IntegerVector target = target_class_map["target"];
 
     for (int i = 0; i < npixel; i++) {
         bool is_left_water   = data(i, 0) == water_class;
@@ -178,8 +182,15 @@ NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class) {
         bool is_right_water  = data(i, 2) == water_class;
 
         if (is_middle_water && (!is_left_water || !is_right_water)) {
-            // If middle is water, change to the first class.
-            data(i, 1) = data(i, 0);
+            // Use data(i, 0) to find matching source and get target
+            int source_class = static_cast<int>(data(i, 0));
+
+            for (int j = 0; j < source.length(); j++) {
+                if (source[j] == source_class) {
+                    data(i, 1) = target[j];
+                    break;
+                }
+            }
         }
     }
 
