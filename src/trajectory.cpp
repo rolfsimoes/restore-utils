@@ -268,12 +268,12 @@ NumericMatrix C_trajectory_urban_analysis(NumericMatrix data, NumericMatrix mask
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_vs_analysis(NumericMatrix data, int vs_class, IntegerVector pasture_class) {
+NumericMatrix C_trajectory_vs_analysis(NumericMatrix data, int vs_class, IntegerVector pasture_class, int target_class) {
     int npixel = data.nrow();
 
     for (int i = 0; i < npixel; i++) {
         bool is_left   = std::find(pasture_class.begin(), pasture_class.end(), data(i, 0)) != pasture_class.end();
-        bool is_middle = data(i, 1) == vs_class;
+        bool is_middle = data(i, 1) == target_class;
         bool is_right  = std::find(pasture_class.begin(), pasture_class.end(), data(i, 2)) != pasture_class.end();
 
         if (is_left && is_middle && is_right) {

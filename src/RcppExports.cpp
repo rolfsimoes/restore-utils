@@ -160,15 +160,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_trajectory_vs_analysis
-NumericMatrix C_trajectory_vs_analysis(NumericMatrix data, int vs_class, IntegerVector pasture_class);
-RcppExport SEXP _restoreutils_C_trajectory_vs_analysis(SEXP dataSEXP, SEXP vs_classSEXP, SEXP pasture_classSEXP) {
+NumericMatrix C_trajectory_vs_analysis(NumericMatrix data, int vs_class, IntegerVector pasture_class, int target_class);
+RcppExport SEXP _restoreutils_C_trajectory_vs_analysis(SEXP dataSEXP, SEXP vs_classSEXP, SEXP pasture_classSEXP, SEXP target_classSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type vs_class(vs_classSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type pasture_class(pasture_classSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_trajectory_vs_analysis(data, vs_class, pasture_class));
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_vs_analysis(data, vs_class, pasture_class, target_class));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -185,7 +186,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_trajectory_neighbor_majority_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis, 2},
     {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 2},
     {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
-    {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 3},
+    {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 4},
     {NULL, NULL, 0}
 };
 

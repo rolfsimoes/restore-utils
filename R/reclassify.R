@@ -1424,6 +1424,7 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
                                                              year,
                                                              vs_class_id,
                                                              pasture_class_id,
+                                                             target_class_id,
                                                              version,
                                                              multicores,
                                                              memsize,
@@ -1484,6 +1485,7 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["vs_class_id"]] <- vs_class_id
     chunks[["pasture_class_id"]] <- pasture_class_id
+    chunks[["target_class_id"]] <- target_class_id
     # Start workers
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
@@ -1495,6 +1497,7 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
         output_dir <- chunk[["output_dir"]]
         files <- chunk[["files"]][[1]]
         vs_class_id <- chunk[["vs_class_id"]]
+        target_class_id <- chunk[["target_class_id"]]
         pasture_class_id <- unlist(chunk[["pasture_class_id"]])
         # Define block file name / path
         block_file <- sits:::.file_block_name(
@@ -1516,7 +1519,8 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
         values <- restoreutils:::C_trajectory_vs_analysis(
             data          = values,
             vs_class      = vs_class_id,
-            pasture_class = pasture_class_id
+            pasture_class = pasture_class_id,
+            target_class  = target_class_id
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(
