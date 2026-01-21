@@ -1111,7 +1111,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["water_class_id"]] <- water_class_id
-    chunks[["target_class_map"]] <- target_class_map
+    chunks[["target_class_map"]] <- rep(list(target_class_map), nrow(chunks))
     # Start workers
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
@@ -1123,7 +1123,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
         water_class_id <- chunk[["water_class_id"]]
-        target_class_map <- chunk[["target_class_map"]]
+        target_class_map <- chunk[["target_class_map"]][[1]]
         # Define block file name / path
         block_file <- sits:::.file_block_name(
             pattern = tools::file_path_sans_ext(out_filename),
