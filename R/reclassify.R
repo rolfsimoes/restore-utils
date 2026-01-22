@@ -904,6 +904,7 @@ reclassify_rule21_pasture_annual_agriculture <- function(cube, mask, multicores,
 #' @export
 reclassify_rule22_temporal_annual_agriculture <- function(files,
                                                           annual_agriculture_class_id,
+                                                          target_class_map,
                                                           version,
                                                           multicores,
                                                           memsize,
@@ -961,6 +962,7 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["annual_agriculture_class_id"]] <- annual_agriculture_class_id
+    chunks[["target_class_map"]] <- rep(list(target_class_map), nrow(chunks))
     # Start workers
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
@@ -971,6 +973,7 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
         # Get extra context defined by restoreutils
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
+        target_class_map <- chunk[["target_class_map"]][[1]]
         annual_agriculture_class_id <- chunk[["annual_agriculture_class_id"]]
         # Define block file name / path
         block_file <- sits:::.file_block_name(
@@ -995,7 +998,8 @@ reclassify_rule22_temporal_annual_agriculture <- function(files,
         # // > "Se temos classe x, ag anual (2ciclos), classe x, o valor do meio (ag anual), vira classe x"
         values <- restoreutils:::C_trajectory_neighbor_majority_analysis(
             data = values,
-            reference_class = annual_agriculture_class_id
+            reference_class = annual_agriculture_class_id,
+            target_class_map = target_class_map
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

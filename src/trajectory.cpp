@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <algorithm>
 
 using namespace Rcpp;
 
@@ -141,7 +142,7 @@ NumericMatrix C_trajectory_neighbor_consistency_analysis_with_mask(NumericMatrix
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int reference_class) {
+NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int reference_class, DataFrame target_class_map) {
     // This rule was originally implemented to:
     // > "Se temos classe x, ag anual (2ciclos), classe x, o valor do meio (ag anual), vira classe x"
 
@@ -152,15 +153,53 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
         stop("Expected at least 3 years (columns), but got " + std::to_string(nyear));
     }
 
+    // Extract source and target columns from DataFrame
+    IntegerVector source = target_class_map["source"];
+    IntegerVector target = target_class_map["target"];
+    List indices_list = target_class_map["indices"];
+
     for (int i = 0; i < npixel; i++) {
         // remove edges (start: j = 1; end = j - 1)
         for (int j = 1; j < nyear - 1; j++) {
 
-            bool is_left_equal_to_right = data(i, j - 1) == data(i, j + 1);
+            // Convert left and right values
+            int left_value = static_cast<int>(data(i, j - 1));
+            int right_value = static_cast<int>(data(i, j + 1));
+
+            // Convert left value
+            for (int k = 0; k < source.length(); k++) {
+                if (source[k] == left_value) {
+                    // Get the indices vector for this mapping
+                    IntegerVector valid_indices = as<IntegerVector>(indices_list[k]) - 1;
+
+                    // Check if j is in the valid indices
+                    if (std::find(valid_indices.begin(), valid_indices.end(), j - 1) != valid_indices.end()) {
+                        left_value = target[k];
+                        break;
+                    }
+                }
+            }
+
+            // Convert right value
+            for (int k = 0; k < source.length(); k++) {
+
+                if (source[k] == right_value) {
+                    // Get the indices vector for this mapping
+                    IntegerVector valid_indices = as<IntegerVector>(indices_list[k]) - 1;
+
+                    // Check if j is in the valid indices
+                    if (std::find(valid_indices.begin(), valid_indices.end(), j + 1) != valid_indices.end()) {
+                        right_value = target[k];
+                        break;
+                    }
+                }
+            }
+
+            bool is_left_equal_to_right = left_value == right_value;
             bool is_middle_valid = data(i, j) == reference_class;
 
             if (is_left_equal_to_right && is_middle_valid) {
-                data(i, j) = data(i, j - 1);
+                data(i, j) = left_value;
             }
         }
     }
@@ -171,7 +210,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 // [[Rcpp::export]]
 NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map) {
     int npixel = data.nrow();
-    
+
     // Extract source and target columns from DataFrame
     IntegerVector source = target_class_map["source"];
     IntegerVector target = target_class_map["target"];
