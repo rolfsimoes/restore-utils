@@ -26,6 +26,17 @@
     dplyr::arrange(.data[["pixel"]])
 }
 
+#' @title Configure QML style in a raster as RAT
+#' 
+#' @description Configures the QML style in a raster using RAT.
+#' 
+#' @param map Path to raster file
+#' @param qml Path to QML file
+#' @param band Band number
+#' 
+#' @returns Path to raster file
+#' 
+#' @keywords internal
 #' @export
 rat_set_style <- function(map, qml, band = 1) {
     # Check if map exist

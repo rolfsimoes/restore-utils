@@ -1,10 +1,15 @@
 Package: restoreutils
-Title: Masks for the Restore+ project
+Title: Utilities for the Restore+ activities
 Version: 0.1
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Restore+ masks
+Authors@R: c(
+     person('Felipe', 'Souza', role = c('aut'), email = 'felipe.carvalho@inpe.br'),
+     person('Felipe', 'Carlos', role = c('aut'), email = "efelipecarlos@gmail.com"),
+     person('Rolf', 'Simoes', role = c('aut'), email = 'rolfsimoes@gmail.com'),
+     person('Gilberto', 'Camara', role = c('aut', 'cre'), email = 'gilberto.camara.inpe@gmail.com'),
+     person('Pedro', 'Brito', role = c('ctb'), email = 'pedro_brito1997@hotmail.com')
+    )
+Maintainer: Gilberto Camara <gilberto.camara.inpe@gmail.com>
+Description: Utilities for the Restore+ activities
 License: GPL-2 + file LICENSE
 Encoding: UTF-8
 Language: en-US
@@ -13,14 +18,18 @@ RoxygenNote: 7.3.3
 ByteCompile: true
 LazyData: true
 Imports:
+    cli,
     dplyr (>= 1.1.0),
     fs,
+    gdalraster,
+    gdalUtilities,
     ntfy,
+    openxlsx,
+    Rcpp (>= 1.1.0),
     sf (>= 1.0-19),
     sits (>= 1.5.2),
-    Rcpp (>= 1.1.0),
-    future,
-    furrr,
-    withr
+    stringr,
+    terra,
+    xml2
 LinkingTo:
     Rcpp

@@ -42,7 +42,7 @@ cube_to_rgb_mosaic_ogh <- function(cube,
     fs::dir_create(output_mosaic_complete_dir, recurse = TRUE)
 
     # get mosaic timeline
-    mosaic_timeline <- sits_timeline(mosaic)
+    mosaic_timeline <- sits::sits_timeline(mosaic)
 
     # merge mosaic file infos
     mosaic_files <- dplyr::bind_rows(mosaic[["file_info"]])
