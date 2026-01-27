@@ -697,9 +697,12 @@ reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
     if (!rarg_year %in% terraclass_years) {
         rules_expression <- bquote(
             list(
-                "Perene" = ((cube == "vegetacao_secundaria" | cube == "past_arbustiva") &
-                                mask == "CULTURA AGRICOLA PERENE"
-                )
+                "Perene" = ((
+                    cube == "vegetacao_secundaria" |
+                    cube == "past_arbustiva" |
+                    cube == "vs_pasture" |
+                    cube == "vs_herbacea_pasture"
+                ) & mask == "CULTURA AGRICOLA PERENE")
             )
         )
     } else {
