@@ -697,9 +697,12 @@ reclassify_rule19_perene <- function(cube, mask, multicores, memsize,
     if (!rarg_year %in% terraclass_years) {
         rules_expression <- bquote(
             list(
-                "Perene" = ((cube == "vegetacao_secundaria" | cube == "past_arbustiva") &
-                                mask == "CULTURA AGRICOLA PERENE"
-                )
+                "Perene" = ((
+                    cube == "vegetacao_secundaria" |
+                    cube == "past_arbustiva" |
+                    cube == "vs_pasture" |
+                    cube == "vs_herbacea_pasture"
+                ) & mask == "CULTURA AGRICOLA PERENE")
             )
         )
     } else {
@@ -1558,4 +1561,35 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
     unlink(block_files)
     # Return!
     return(file_out)
+}
+
+
+
+#' @export
+reclassify_rule30_control_forest_under_2008 <- function(cube, multicores, memsize,
+                                                        output_dir, version, rarg_year, exclude_mask_na = FALSE) {
+    # build args for expression
+    valid_years <- 2000:2007
+
+    if (rarg_year %in% valid_years) {
+        # Load prodes 2008
+        prodes_2008 <- load_prodes_2008(multicores = multicores, memsize = memsize)
+
+        # Reclassify!
+        cube <- sits::sits_reclassify(
+            cube = cube,
+            mask = prodes_2008,
+            rules      = list(
+                "Forest" = cube %in% c("Forest", "Mountainside_Forest", "Riparian_Forest") |
+                           mask %in% c("Vegetação Nativa", "d2008")
+            ),
+            exclude_mask_na = exclude_mask_na,
+            multicores = multicores,
+            memsize = memsize,
+            output_dir = output_dir,
+            version = version
+        )
+    }
+
+    .reclassify_save_rds(cube, output_dir, version)
 }
