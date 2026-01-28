@@ -17,6 +17,8 @@ restore_mapping_reference_table <- function() {
         tibble::add_row(source = "pasto_semiperene_2"       , target = 104) |>
         tibble::add_row(source = "pasture_annual_agriculture" , target = 104) |>
         tibble::add_row(source = "pasture_deforestation_in_nonforest" , target = 104) |>
+        tibble::add_row(source = "vs_herbacea_pasture" , target = 104) |>
+        tibble::add_row(source = "vs_pasture" , target = 104) |>
 
         tibble::add_row(source = "Seasonally_Flooded_ICS" , target = 105) |>
         tibble::add_row(source = "Wetland_ICS"            , target = 105) |>
