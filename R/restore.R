@@ -132,6 +132,53 @@ get_restore_rds_files <- function(mask_version) {
 }
 
 #' @export
+load_cerrado_version <- function(year, version, multicores = 10, memsize = 16, data_dir = "data/derived/classifications", labels = NULL) {
+    data_dir <- fs::path(data_dir) / version / year
+    rds_file <- data_dir / "map.rds"
+
+    default_labels <- c(
+        "1" = "Agricultura anual",
+        "2" = "Campo Natural",
+        "3" = "Água",
+        "4" = "Floresta",
+        "5" = "Formações Arenosas",
+        "6" = "Pasture",
+        "7" = "Perennial_Crop",
+        "8" = "Silviculture",
+        "9" = "Sugarcane",
+        "10" = "Vegetação Natural"
+    )
+
+    if (is.null(labels)) {
+        labels <- default_labels
+    }
+
+    if (fs::file_exists(rds_file)) {
+
+        cube <- readRDS(rds_file)
+
+    } else {
+        cube <- sits::sits_cube(
+            source = "MPC",
+            collection = "LANDSAT-C2-L2",
+            data_dir = data_dir,
+            multicores = multicores,
+            memsize = memsize,
+            parse_info = c("product", "sensor",
+                           "tile", "start_date", "end_date",
+                           "band", "version"),
+            bands = "class",
+            labels = labels
+        )
+
+        saveRDS(cube, rds_file)
+    }
+
+    # Return!
+    return(cube)
+}
+
+#' @export
 get_restore_assets_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
     files_dir <- create_data_dir("data/derived/masks/base", mask_version)
     files_pattern <- "LANDSAT_TM-ETM-OLI_MOSAIC_2024-01-01_2024-12-31_class_v1\\.tif$"
