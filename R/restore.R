@@ -129,6 +129,43 @@ get_restore_rds_files <- function(mask_version) {
 }
 
 #' @export
+load_cerrado_map <- function(data_dir, multicores = 32, memsize = 120, labels = NULL, ...) {
+    # Default classification label - based on classification results
+    default_labels <- c(
+        "1" = "Agricultura anual",
+        "2" = "Campo Natural",
+        "3" = "Água",
+        "4" = "Floresta",
+        "5" = "Formações Arenosas",
+        "6" = "Pasture",
+        "7" = "Perennial_Crop",
+        "8" = "Silviculture",
+        "9" = "Sugarcane",
+        "10" = "Vegetação Natural"
+    )
+
+    if (is.null(labels)) {
+        labels = default_labels
+    }
+
+    cube <- sits::sits_cube(
+        source = "BDC",
+        collection = "LANDSAT-OLI-16D",
+        data_dir = data_dir,
+        memsize = memsize,
+        multicores = multicores,
+        parse_info = c("satellite", "sensor",
+                       "tile", "start_date", "end_date",
+                       "band", "version"),
+        bands = "class",
+        labels = labels,
+        ...
+    )
+
+    return(cube)
+}
+
+#' @export
 get_restore_assets_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
     files_dir <- create_data_dir("data/derived/masks/base", mask_version)
     files_pattern <- "LANDSAT_TM-ETM-OLI_MOSAIC_2024-01-01_2024-12-31_class_v1\\.tif$"
