@@ -118,7 +118,7 @@ validation_compare_versions <- function(file,
             block = NULL
         )
         # Process data
-        values <- restoreutils:::C_trajectory_neighbor_consistency_analysis_with_mask(
+        values <- restoreutils:::C_validation_compare_versions(
             data        = values,
             mask        = values_mask,
             data_class  = target_class_id,
@@ -144,7 +144,7 @@ validation_compare_versions <- function(file,
     # Merge raster blocks
     sits:::.raster_merge_blocks(
         out_files = file_out,
-        base_file = files,
+        base_file = file,
         block_files = block_files,
         data_type = "INT1U",
         missing_value = 255,
