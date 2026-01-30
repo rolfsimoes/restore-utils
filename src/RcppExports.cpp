@@ -175,6 +175,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_validation_compare_versions
+NumericMatrix C_validation_compare_versions(NumericMatrix data, NumericMatrix mask, int data_class, int mask_class);
+RcppExport SEXP _restoreutils_C_validation_compare_versions(SEXP dataSEXP, SEXP maskSEXP, SEXP data_classSEXP, SEXP mask_classSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mask(maskSEXP);
+    Rcpp::traits::input_parameter< int >::type data_class(data_classSEXP);
+    Rcpp::traits::input_parameter< int >::type mask_class(mask_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_validation_compare_versions(data, mask, data_class, mask_class));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_context_cleaner", (DL_FUNC) &_restoreutils_C_context_cleaner, 7},
@@ -189,6 +203,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 3},
     {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
     {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 4},
+    {"_restoreutils_C_validation_compare_versions", (DL_FUNC) &_restoreutils_C_validation_compare_versions, 4},
     {NULL, NULL, 0}
 };
 

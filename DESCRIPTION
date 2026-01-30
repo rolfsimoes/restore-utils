@@ -30,6 +30,7 @@ Imports:
     sits (>= 1.5.2),
     stringr,
     terra,
+    tidyr,
     xml2
 LinkingTo:
     Rcpp

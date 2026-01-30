@@ -72,9 +72,6 @@ load_restore_map_glad <- function(data_dir, multicores = 32, memsize = 120, labe
     )
 }
 
-
-
-
 #' @export
 get_restore_masks_files <- function(mask_version, files_version, multicores = 32, memsize = 120) {
     files_dir <- create_data_dir("data/derived/masks", mask_version)
