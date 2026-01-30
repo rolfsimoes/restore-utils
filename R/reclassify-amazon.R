@@ -1563,8 +1563,6 @@ reclassify_rule29_temporal_trajectory_vs_pasture <- function(files,
     return(file_out)
 }
 
-
-
 #' @export
 reclassify_rule30_control_forest_under_2008 <- function(cube, multicores, memsize,
                                                         output_dir, version, rarg_year, exclude_mask_na = FALSE) {
