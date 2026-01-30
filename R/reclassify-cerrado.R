@@ -10,7 +10,7 @@ reclassify_cer_rule0_natveg <- function(cube, mask, multicores, memsize, output_
 
     # Filter labels to be included in mask
     labels_to_mask <- setdiff(
-        not_included_labels, unname(sits::sits_labels(cube))
+        unname(sits::sits_labels(cube)), not_included_labels
     )
 
     # Build rules expression: each label will be a class
