@@ -129,10 +129,8 @@ get_restore_rds_files <- function(mask_version) {
 }
 
 #' @export
-load_cerrado_version <- function(year, version, multicores = 10, memsize = 16, data_dir = "data/derived/classifications", labels = NULL) {
-    data_dir <- fs::path(data_dir) / version / year
-    rds_file <- data_dir / "map.rds"
-
+load_cerrado_map <- function(data_dir, multicores = 32, memsize = 120, labels = NULL, ...) {
+    # Default classification label - based on classification results
     default_labels <- c(
         "1" = "Agricultura anual",
         "2" = "Campo Natural",
@@ -147,31 +145,23 @@ load_cerrado_version <- function(year, version, multicores = 10, memsize = 16, d
     )
 
     if (is.null(labels)) {
-        labels <- default_labels
+        labels = default_labels
     }
 
-    if (fs::file_exists(rds_file)) {
+    cube <- sits::sits_cube(
+        source = "BDC",
+        collection = "LANDSAT-OLI-16D",
+        data_dir = data_dir,
+        memsize = memsize,
+        multicores = multicores,
+        parse_info = c("satellite", "sensor",
+                       "tile", "start_date", "end_date",
+                       "band", "version"),
+        bands = "class",
+        labels = labels,
+        ...
+    )
 
-        cube <- readRDS(rds_file)
-
-    } else {
-        cube <- sits::sits_cube(
-            source = "MPC",
-            collection = "LANDSAT-C2-L2",
-            data_dir = data_dir,
-            multicores = multicores,
-            memsize = memsize,
-            parse_info = c("product", "sensor",
-                           "tile", "start_date", "end_date",
-                           "band", "version"),
-            bands = "class",
-            labels = labels
-        )
-
-        saveRDS(cube, rds_file)
-    }
-
-    # Return!
     return(cube)
 }
 
