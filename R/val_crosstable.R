@@ -1,5 +1,5 @@
 #' @export
-crosstable <- function(map, ref, multicores, memsize, output_dir) {
+crosstable <- function(map, ref, output_dir, multicores = 10, memsize = 16) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -123,3 +123,60 @@ crosstable <- function(map, ref, multicores, memsize, output_dir) {
         dplyr::group_by(.data[["map_values"]], .data[["ref_values"]]) |>
         dplyr::summarise(n = sum(.data[["Freq"]]), .groups = 'drop')
 }
+
+#' @export
+crosstable_named <- function(map, reference, map_name, reference_name, multicores = 10, memsize = 16, data_dir = NULL) {
+    # Get maps labels
+    map_labels <- sits_labels(map)
+    ref_labels <- sits_labels(reference)
+
+    current_col_name <- glue::glue("_{map_name}")
+    next_col_name <- glue::glue("_{reference_name}")
+
+    # Define directory
+    if (is.null(data_dir)) {
+        data_dir <- tempdir()
+    }
+
+    # Calculate crosstable
+    crosstable(
+        map        = map,
+        ref        = reference,
+        multicores = multicores,
+        memsize    = memsize,
+        output_dir = data_dir
+    ) |>
+        dplyr::rename(
+            "current" = "map_values",
+            "next"    = "ref_values"
+        ) |>
+        dplyr::mutate(
+            "current" = as.factor(.data[["current"]]),
+            "next" = as.factor(.data[["next"]]),
+        ) |>
+        dplyr::rowwise() |>
+        dplyr::mutate(
+            "current" = (
+                stringr::str_to_title(
+                    map_labels[[  levels(.data[["current"]])[.data[["current"]]]  ]]
+                ) |>
+                    stringr::str_c(glue::glue("_{map_name}"))
+            ),
+            "next"  = (
+                stringr::str_to_title(
+                    ref_labels[[  levels(.data[["next"]])[.data[["next"]]]  ]]
+                ) |>
+                    stringr::str_c(glue::glue("_{reference_name}"))
+            )
+        ) |>
+        dplyr::rename(
+            !!current_col_name := "current",
+            !!next_col_name := "next"
+        ) |>
+        tidyr::pivot_wider(
+            names_from = !!current_col_name,
+            values_from = n,
+            values_fill = 0
+        )
+}
+

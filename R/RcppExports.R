@@ -49,3 +49,7 @@ C_trajectory_vs_analysis <- function(data, vs_class, pasture_class, target_class
     .Call(`_restoreutils_C_trajectory_vs_analysis`, data, vs_class, pasture_class, target_class)
 }
 
+C_validation_compare_versions <- function(data, mask, data_class, mask_class) {
+    .Call(`_restoreutils_C_validation_compare_versions`, data, mask, data_class, mask_class)
+}
+
