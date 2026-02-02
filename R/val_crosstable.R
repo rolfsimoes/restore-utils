@@ -1,8 +1,13 @@
 #' @export
-crosstable <- function(map, ref, output_dir, multicores = 10, memsize = 16) {
+crosstable <- function(map, ref, output_dir, multicores = 10, memsize = 16, roi = NULL) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
+    # Verify ROI
+    if (!is.null(roi)) {
+        roi <- sits:::.roi_as_sf(roi)
+    }
+
     # The following functions define optimal parameters for parallel processing
     file <- sits:::.tile_path(map)
     rast_template <- sits:::.raster_open_rast(file)
@@ -43,6 +48,19 @@ crosstable <- function(map, ref, output_dir, multicores = 10, memsize = 16) {
             default_crs = terra::crs(rast_template)
         )
     )
+    # Filter chunks by ROI
+    if (!is.null(roi)) {
+        # How many chunks do we need to process?
+        nchunks <- nrow(chunks)
+        # Intersect chunks with ROI
+        chunks <- sits:::.chunks_filter_spatial(
+            chunks = chunks,
+            roi = roi
+        )
+        # Update bbox to account for ROI
+        update_bbox <- nrow(chunks) != nchunks
+    }
+
     # Update chunk to save extra information
     chunks[["map"]] <- map
     chunks[["ref"]]  <- ref
@@ -125,7 +143,7 @@ crosstable <- function(map, ref, output_dir, multicores = 10, memsize = 16) {
 }
 
 #' @export
-crosstable_named <- function(map, reference, map_name, reference_name, multicores = 10, memsize = 16, data_dir = NULL) {
+crosstable_named <- function(map, reference, map_name, reference_name, multicores = 10, memsize = 16, data_dir = NULL, roi = NULL) {
     # Get maps labels
     map_labels <- sits_labels(map)
     ref_labels <- sits_labels(reference)
@@ -144,7 +162,8 @@ crosstable_named <- function(map, reference, map_name, reference_name, multicore
         ref        = reference,
         multicores = multicores,
         memsize    = memsize,
-        output_dir = data_dir
+        output_dir = data_dir,
+        roi        = roi
     ) |>
         dplyr::rename(
             "current" = "map_values",

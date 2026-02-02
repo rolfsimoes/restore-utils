@@ -362,8 +362,8 @@ load_terraclass_2018 <- function(version = "v1", multicores = 32, memsize = 120)
 
 #' @export
 load_terraclass_cerrado_2018 <- function(version = "v1", multicores = 32, memsize = 120) {
-    terraclass_dir <- restoreutils:::.terraclass_dir(version, 2018)
-    terraclass_rds <- restoreutils:::.terraclass_rds(terraclass_dir)
+    terraclass_dir <- .terraclass_dir(version, 2018)
+    terraclass_rds <- .terraclass_rds(terraclass_dir)
 
     if (fs::file_exists(terraclass_rds)) {
 
