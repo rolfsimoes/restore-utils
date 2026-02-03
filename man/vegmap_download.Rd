@@ -4,11 +4,7 @@
 \alias{vegmap_download}
 \title{Download Cerrado vegetation map from S3}
 \usage{
-<<<<<<< HEAD
 vegmap_download(year, version = "v1")
-=======
-vegmap_download(year)
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
 }
 \arguments{
 \item{year}{Integer or character with the year of the map (e.g. \code{2020}).}

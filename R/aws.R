@@ -47,11 +47,7 @@ aws_upload <- function(files, object, bucket, ...) {
 #' @description Downloads a single file from an AWS S3 bucket (or any HTTP/HTTPS
 #'   URL) to a local directory. The file is saved with a \code{sits}-standard filename:
 #'   \itemize{
-<<<<<<< HEAD
 #'     \item \code{LANDSAT_OLI_MOSAIC_YYYY-01-01_YYYY-12-31_class_VVVV.tif}.
-=======
-#'     \item \code{output_dir/version/year/LANDSAT_OLI_MOSAIC_YYYY-01-01_YYYY-12-31_class_v1.tif}.
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
 #'   }
 #'   If the target file already exists locally, the function returns its path
 #'   without re-downloading.
@@ -68,17 +64,10 @@ aws_upload <- function(files, object, bucket, ...) {
 #' @export
 aws_download <- function(file, version, year, output_dir) {
     # Define output directory
-<<<<<<< HEAD
     output_dir <- fs::dir_create(output_dir)
 
     # Define output directory
     output_file <- glue::glue("LANDSAT_OLI_MOSAIC_{year}-01-01_{year}-12-31_class_{version}.tif")
-=======
-    output_dir <- fs::dir_create(output_dir) / version / year
-
-    # Define output directory
-    output_file <- glue::glue("LANDSAT_OLI_MOSAIC_{year}-01-01_{year}-12-31_class_v1.tif")
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
     output_file <- output_dir / output_file
 
     # If already exist, return it

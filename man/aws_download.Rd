@@ -24,11 +24,7 @@ Character path to the downloaded (or existing) local file, as an
 Downloads a single file from an AWS S3 bucket (or any HTTP/HTTPS
 URL) to a local directory. The file is saved with a \code{sits}-standard filename:
 \itemize{
-<<<<<<< HEAD
 \item \code{LANDSAT_OLI_MOSAIC_YYYY-01-01_YYYY-12-31_class_VVVV.tif}.
-=======
-\item \code{output_dir/version/year/LANDSAT_OLI_MOSAIC_YYYY-01-01_YYYY-12-31_class_v1.tif}.
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
 }
 If the target file already exists locally, the function returns its path
 without re-downloading.

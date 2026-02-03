@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 .vegmap_dir <- function(year, version) {
     base_dir <- "data/derived/masks/base/vegmap"
     base_dir <- .project_env_variable("MASK_VEGMAP_BASE_DIR", base_dir)
 
     fs::dir_create(fs::path(base_dir) / version / year)
-=======
-.vegmap_dir <- function(year) {
-    fs::dir_create(fs::path("data/derived/masks/base/vegmap") / year)
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
 }
 
 #' @title Download Cerrado vegetation map from S3
@@ -19,35 +14,20 @@
 #' @returns Character path to the downloaded local file.
 #'
 #' @export
-<<<<<<< HEAD
 vegmap_download <- function(year, version = "v1") {
     # Define output dir
     vegmap_dir <- .vegmap_dir(year, version)
-=======
-vegmap_download <- function(year) {
-    # Define output dir
-    vegmap_dir <- .vegmap_dir(year)
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
 
     # Define output file
     vegmap_file <- glue::glue("https://restore-plus.s3.us-east-1.amazonaws.com/ext-maps/natveg/cer/v1/natveg_30m_cer_{year}-01-01_{year}-12-31_class_v1.tif")
 
     # Download file
-<<<<<<< HEAD
     aws_download(vegmap_file, version, year, vegmap_dir)
 }
 
 #' @export
 load_vegmap <- function(year, version = "v1", multicores = 10, memsize = 16) {
     vegmap_dir <- .vegmap_dir(year, version)
-=======
-    aws_download(vegmap_file, "v1", year, vegmap_dir)
-}
-
-#' @export
-load_vegmap <- function(year, multicores = 10, memsize = 16) {
-    vegmap_dir <- .vegmap_dir(year)
->>>>>>> 6619145b5104f3effd2e940646afd98dff97f0ba
     vegmap_rds <- vegmap_dir / "vegmap.rds"
 
     if (fs::file_exists(vegmap_rds)) {
