@@ -1063,7 +1063,8 @@ reclassify_rule24_temporal_water_consistency <- function(files,
                                                          version,
                                                          multicores,
                                                          memsize,
-                                                         output_dir) {
+                                                         output_dir,
+                                                         excluded_values = NULL) {
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -1119,6 +1120,11 @@ reclassify_rule24_temporal_water_consistency <- function(files,
     chunks[["out_filename"]] <- out_filename
     chunks[["water_class_id"]] <- water_class_id
     chunks[["target_class_map"]] <- rep(list(target_class_map), nrow(chunks))
+    # If excluded_values is NULL, set it to an empty integer vector
+    if (is.null(excluded_values)) {
+        excluded_values <- integer(-1L)
+    }
+    chunks[["excluded_values"]] <- rep(list(excluded_values), nrow(chunks))
     # Start workers
     sits:::.parallel_start(workers = multicores)
     on.exit(sits:::.parallel_stop(), add = TRUE)
@@ -1131,6 +1137,7 @@ reclassify_rule24_temporal_water_consistency <- function(files,
         out_filename <- chunk[["out_filename"]]
         water_class_id <- chunk[["water_class_id"]]
         target_class_map <- chunk[["target_class_map"]][[1]]
+        excluded_values <- chunk[["excluded_values"]][[1]]
         # Define block file name / path
         block_file <- sits:::.file_block_name(
             pattern = tools::file_path_sans_ext(out_filename),
@@ -1147,7 +1154,8 @@ reclassify_rule24_temporal_water_consistency <- function(files,
         values <- restoreutils:::C_trajectory_water_analysis(
             data = values,
             water_class = water_class_id,
-            target_class_map = target_class_map
+            target_class_map = target_class_map,
+            excluded_values = excluded_values
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

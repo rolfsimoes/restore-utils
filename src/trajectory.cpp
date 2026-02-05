@@ -208,7 +208,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map) {
+NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map, IntegerVector excluded_values) {
     int npixel = data.nrow();
 
     // Extract source and target columns from DataFrame
@@ -216,6 +216,19 @@ NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, D
     IntegerVector target = target_class_map["target"];
 
     for (int i = 0; i < npixel; i++) {
+        // Skip pixels whose left, middle, or right value is in the excluded list
+        int left_value = static_cast<int>(data(i, 0));
+        int middle_value = static_cast<int>(data(i, 1));
+        int right_value = static_cast<int>(data(i, 2));
+
+        bool is_left_excluded = std::find(excluded_values.begin(), excluded_values.end(), left_value) != excluded_values.end();
+        bool is_middle_excluded = std::find(excluded_values.begin(), excluded_values.end(), middle_value) != excluded_values.end();
+        bool is_right_excluded = std::find(excluded_values.begin(), excluded_values.end(), right_value) != excluded_values.end();
+
+        if (is_left_excluded || is_middle_excluded || is_right_excluded) {
+            continue;
+        }
+
         bool is_left_water   = data(i, 0) == water_class;
         bool is_middle_water = data(i, 1) == water_class;
         bool is_right_water  = data(i, 2) == water_class;
