@@ -133,6 +133,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_trajectory_neighbor_majority_analysis_target
+NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> target_class_map);
+RcppExport SEXP _restoreutils_C_trajectory_neighbor_majority_analysis_target(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP target_class_mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type target_class(target_classSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type target_class_map(target_class_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_neighbor_majority_analysis_target(data, reference_class, target_class, target_class_map));
+    return rcpp_result_gen;
+END_RCPP
+}
+// C_trajectory_past_reference
+NumericMatrix C_trajectory_past_reference(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> target_class_map);
+RcppExport SEXP _restoreutils_C_trajectory_past_reference(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP target_class_mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type target_class(target_classSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type target_class_map(target_class_mapSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_past_reference(data, reference_class, target_class, target_class_map));
+    return rcpp_result_gen;
+END_RCPP
+}
 // C_trajectory_water_analysis
 NumericMatrix C_trajectory_water_analysis(NumericMatrix data, int water_class, DataFrame target_class_map, IntegerVector excluded_values);
 RcppExport SEXP _restoreutils_C_trajectory_water_analysis(SEXP dataSEXP, SEXP water_classSEXP, SEXP target_class_mapSEXP, SEXP excluded_valuesSEXP) {
@@ -201,6 +229,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis, 2},
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask, 4},
     {"_restoreutils_C_trajectory_neighbor_majority_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis, 3},
+    {"_restoreutils_C_trajectory_neighbor_majority_analysis_target", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis_target, 4},
+    {"_restoreutils_C_trajectory_past_reference", (DL_FUNC) &_restoreutils_C_trajectory_past_reference, 4},
     {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 4},
     {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
     {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 4},
