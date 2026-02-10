@@ -284,7 +284,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data,
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_past_reference(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> target_class_map = R_NilValue) {
+NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> target_class_map = R_NilValue) {
     // This rule was originally implemented to:
     // > "Se temos desmatamento no ano x, todos os anos 1:x-1 deverao ser floresta"
 
@@ -298,16 +298,17 @@ NumericMatrix C_trajectory_past_reference(NumericMatrix data, int reference_clas
     for (int i = 0; i < npixel; i++) {
         // remove edges (start: j = 1; end = j - 1)
         for (int j = 1; j < nyear - 1; j++) {
-
+            //
             if (static_cast<int>(data(i, j)) == reference_class) {
                 int target_past_value = 0;
 
-                // Get left and right values from target_class
+                // Get target value from target_class
                 if (target_class.isNotNull()) {
                     Rcpp::IntegerVector target_class_value(target_class);
                     target_past_value = target_class_value[0];
                 }
 
+                // Get target value from target_class_map
                 if (target_class_map.isNotNull()) {
 
                     Rcpp::DataFrame target_class_map_df(target_class_map);
@@ -330,6 +331,7 @@ NumericMatrix C_trajectory_past_reference(NumericMatrix data, int reference_clas
                     }
                 }
 
+                // Fill past years with target value
                 for (int t = 0; t < j; t++) {
                     data(i, t) = target_past_value;
                 }
