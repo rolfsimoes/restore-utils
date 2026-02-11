@@ -37,8 +37,8 @@ C_trajectory_neighbor_majority_analysis <- function(data, reference_class, targe
     .Call(`_restoreutils_C_trajectory_neighbor_majority_analysis`, data, reference_class, target_class_map)
 }
 
-C_trajectory_neighbor_majority_analysis_target <- function(data, reference_class, target_class = NULL, target_class_map = NULL) {
-    .Call(`_restoreutils_C_trajectory_neighbor_majority_analysis_target`, data, reference_class, target_class, target_class_map)
+C_trajectory_neighbor_majority_analysis_target <- function(data, reference_class, target_class = NULL, mapping_table = NULL) {
+    .Call(`_restoreutils_C_trajectory_neighbor_majority_analysis_target`, data, reference_class, target_class, mapping_table)
 }
 
 C_trajectory_deforestation_consistency <- function(data, reference_class, target_class = NULL, target_class_map = NULL) {

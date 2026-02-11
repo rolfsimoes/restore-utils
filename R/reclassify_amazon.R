@@ -1604,13 +1604,11 @@ reclassify_rule30_control_forest_under_2008 <- function(cube, multicores, memsiz
 reclassify_rule31_cropand_pasture <- function(files,
                                               annual_agriculture_class_id,
                                               target_class = NULL,
-                                              target_class_map = NULL,
+                                              mapping_table = NULL,
                                               version,
                                               multicores,
                                               memsize,
                                               output_dir) {
-    # Only one target could be null
-    stopifnot(!(is.null(target_class) && is.null(target_class_map)))
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -1664,7 +1662,7 @@ reclassify_rule31_cropand_pasture <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["annual_agriculture_class_id"]] <- annual_agriculture_class_id
-    chunks[["target_class_map"]] <- rep(list(target_class_map), nrow(chunks))
+    chunks[["mapping_table"]] <- rep(list(mapping_table), nrow(chunks))
     chunks[["target_class"]] <- target_class
     # Start workers
     sits:::.parallel_start(workers = multicores)
@@ -1676,7 +1674,7 @@ reclassify_rule31_cropand_pasture <- function(files,
         # Get extra context defined by restoreutils
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
-        target_class_map <- chunk[["target_class_map"]][[1]]
+        mapping_table <- chunk[["mapping_table"]][[1]]
         target_class <- chunk[["target_class"]][[1]]
         annual_agriculture_class_id <- chunk[["annual_agriculture_class_id"]]
         # Define block file name / path
@@ -1697,7 +1695,7 @@ reclassify_rule31_cropand_pasture <- function(files,
             data = values,
             reference_class = annual_agriculture_class_id,
             target_class = target_class,
-            target_class_map = target_class_map
+            mapping_table = mapping_table
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

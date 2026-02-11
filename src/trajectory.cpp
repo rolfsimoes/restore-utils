@@ -208,7 +208,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> target_class_map = R_NilValue) {
+NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> mapping_table = R_NilValue) {
     // This rule was originally implemented to:
     // > "Se temos qualquer pastagem, ag anual (2ciclos), qualquer pastagem, o valor do meio (ag anual), vira pastagem"
 
@@ -222,25 +222,20 @@ NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data,
     for (int i = 0; i < npixel; i++) {
         // remove edges (start: j = 1; end = j - 1)
         for (int j = 1; j < nyear - 1; j++) {
-
             // Get left and right values from previous and next years
             int left_value = static_cast<int>(data(i, j - 1));
             int right_value = static_cast<int>(data(i, j + 1));
 
-            // Get left and right values from target_class
-            if (target_class.isNotNull()) {
-                Rcpp::IntegerVector target_class_value(target_class);
-                left_value = target_class_value[0];
-                right_value = target_class_value[0];
-            }
+            // Define auxiliary variables
+            bool is_middle_valid;
+            bool is_left_equal_to_right;
 
             // Extract source and target columns from DataFrame
-            if (target_class_map.isNotNull()) {
-
-                Rcpp::DataFrame target_class_map_df(target_class_map);
-                IntegerVector source = target_class_map_df["source"];
-                IntegerVector target = target_class_map_df["target"];
-                List indices_list = target_class_map_df["indices"];
+            if (mapping_table.isNotNull()) {
+                Rcpp::DataFrame mapping_table_df(mapping_table);
+                IntegerVector source = mapping_table_df["source"];
+                IntegerVector target = mapping_table_df["target"];
+                List indices_list = mapping_table_df["indices"];
 
                 // Convert left value
                 for (int k = 0; k < source.length(); k++) {
@@ -269,10 +264,26 @@ NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data,
                         }
                     }
                 }
+
+                // Compare pixel values
+                is_left_equal_to_right = left_value == right_value;
             }
 
-            bool is_left_equal_to_right = left_value == right_value;
-            bool is_middle_valid = data(i, j) == reference_class;
+            // Get left and right values from target_class
+            if (target_class.isNotNull()) {
+                // Get target class value
+                Rcpp::IntegerVector target_class_tmp(target_class);
+                int target_class_value = target_class_tmp[0];
+
+                // Compare if left and right are equal to the target class
+                bool is_left_equal_to_target = left_value == target_class_value;
+                bool is_right_equal_to_target = right_value == target_class_value;
+
+                // Define if left and right are equal
+                is_left_equal_to_right = is_left_equal_to_target && is_right_equal_to_target;
+            }
+
+            is_middle_valid = data(i, j) == reference_class;
 
             if (is_left_equal_to_right && is_middle_valid) {
                 data(i, j) = left_value;

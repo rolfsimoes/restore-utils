@@ -134,16 +134,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_trajectory_neighbor_majority_analysis_target
-NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> target_class_map);
-RcppExport SEXP _restoreutils_C_trajectory_neighbor_majority_analysis_target(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP target_class_mapSEXP) {
+NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> mapping_table);
+RcppExport SEXP _restoreutils_C_trajectory_neighbor_majority_analysis_target(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP mapping_tableSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type target_class(target_classSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type target_class_map(target_class_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_trajectory_neighbor_majority_analysis_target(data, reference_class, target_class, target_class_map));
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type mapping_table(mapping_tableSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_neighbor_majority_analysis_target(data, reference_class, target_class, mapping_table));
     return rcpp_result_gen;
 END_RCPP
 }
