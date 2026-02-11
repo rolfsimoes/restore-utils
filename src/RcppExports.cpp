@@ -134,30 +134,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // C_trajectory_neighbor_majority_analysis_target
-NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> mapping_table);
-RcppExport SEXP _restoreutils_C_trajectory_neighbor_majority_analysis_target(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP mapping_tableSEXP) {
+NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, int target_class);
+RcppExport SEXP _restoreutils_C_trajectory_neighbor_majority_analysis_target(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type target_class(target_classSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type mapping_table(mapping_tableSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_trajectory_neighbor_majority_analysis_target(data, reference_class, target_class, mapping_table));
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_neighbor_majority_analysis_target(data, reference_class, target_class));
     return rcpp_result_gen;
 END_RCPP
 }
 // C_trajectory_deforestation_consistency
-NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class, Rcpp::Nullable<Rcpp::DataFrame> target_class_map);
-RcppExport SEXP _restoreutils_C_trajectory_deforestation_consistency(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP, SEXP target_class_mapSEXP) {
+NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int reference_class, int target_class);
+RcppExport SEXP _restoreutils_C_trajectory_deforestation_consistency(SEXP dataSEXP, SEXP reference_classSEXP, SEXP target_classSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type reference_class(reference_classSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type target_class(target_classSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::DataFrame> >::type target_class_map(target_class_mapSEXP);
-    rcpp_result_gen = Rcpp::wrap(C_trajectory_deforestation_consistency(data, reference_class, target_class, target_class_map));
+    Rcpp::traits::input_parameter< int >::type target_class(target_classSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_trajectory_deforestation_consistency(data, reference_class, target_class));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -229,8 +227,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis, 2},
     {"_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_consistency_analysis_with_mask, 4},
     {"_restoreutils_C_trajectory_neighbor_majority_analysis", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis, 3},
-    {"_restoreutils_C_trajectory_neighbor_majority_analysis_target", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis_target, 4},
-    {"_restoreutils_C_trajectory_deforestation_consistency", (DL_FUNC) &_restoreutils_C_trajectory_deforestation_consistency, 4},
+    {"_restoreutils_C_trajectory_neighbor_majority_analysis_target", (DL_FUNC) &_restoreutils_C_trajectory_neighbor_majority_analysis_target, 3},
+    {"_restoreutils_C_trajectory_deforestation_consistency", (DL_FUNC) &_restoreutils_C_trajectory_deforestation_consistency, 3},
     {"_restoreutils_C_trajectory_water_analysis", (DL_FUNC) &_restoreutils_C_trajectory_water_analysis, 4},
     {"_restoreutils_C_trajectory_urban_analysis", (DL_FUNC) &_restoreutils_C_trajectory_urban_analysis, 5},
     {"_restoreutils_C_trajectory_vs_analysis", (DL_FUNC) &_restoreutils_C_trajectory_vs_analysis, 4},

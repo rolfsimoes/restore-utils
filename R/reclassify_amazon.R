@@ -1603,8 +1603,7 @@ reclassify_rule30_control_forest_under_2008 <- function(cube, multicores, memsiz
 #' @export
 reclassify_rule31_cropand_pasture <- function(files,
                                               annual_agriculture_class_id,
-                                              target_class = NULL,
-                                              mapping_table = NULL,
+                                              target_class,
                                               version,
                                               multicores,
                                               memsize,
@@ -1662,7 +1661,6 @@ reclassify_rule31_cropand_pasture <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["annual_agriculture_class_id"]] <- annual_agriculture_class_id
-    chunks[["mapping_table"]] <- rep(list(mapping_table), nrow(chunks))
     chunks[["target_class"]] <- target_class
     # Start workers
     sits:::.parallel_start(workers = multicores)
@@ -1674,7 +1672,6 @@ reclassify_rule31_cropand_pasture <- function(files,
         # Get extra context defined by restoreutils
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
-        mapping_table <- chunk[["mapping_table"]][[1]]
         target_class <- chunk[["target_class"]][[1]]
         annual_agriculture_class_id <- chunk[["annual_agriculture_class_id"]]
         # Define block file name / path
@@ -1694,8 +1691,7 @@ reclassify_rule31_cropand_pasture <- function(files,
         values <- restoreutils:::C_trajectory_neighbor_majority_analysis_target(
             data = values,
             reference_class = annual_agriculture_class_id,
-            target_class = target_class,
-            mapping_table = mapping_table
+            target_class = target_class
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(
@@ -1730,14 +1726,11 @@ reclassify_rule31_cropand_pasture <- function(files,
 #' @export
 reclassify_rule32_deforestation_consistency <- function(files,
                                                         deforestation_id,
-                                                        target_class = NULL,
-                                                        target_class_map = NULL,
+                                                        target_class,
                                                         version,
                                                         multicores,
                                                         memsize,
                                                         output_dir) {
-    # Only one target could be null
-    stopifnot(!(is.null(target_class) && is.null(target_class_map)))
     # Create output directory
     output_dir <- fs::path(output_dir)
     fs::dir_create(output_dir)
@@ -1791,7 +1784,6 @@ reclassify_rule32_deforestation_consistency <- function(files,
     chunks[["files"]] <- rep(list(files), nrow(chunks))
     chunks[["out_filename"]] <- out_filename
     chunks[["deforestation_id"]] <- deforestation_id
-    chunks[["target_class_map"]] <- rep(list(target_class_map), nrow(chunks))
     chunks[["target_class"]] <- target_class
     # Start workers
     sits:::.parallel_start(workers = multicores)
@@ -1803,7 +1795,6 @@ reclassify_rule32_deforestation_consistency <- function(files,
         # Get extra context defined by restoreutils
         files <- chunk[["files"]][[1]]
         out_filename <- chunk[["out_filename"]]
-        target_class_map <- chunk[["target_class_map"]][[1]]
         target_class <- chunk[["target_class"]][[1]]
         deforestation_id <- chunk[["deforestation_id"]]
         # Define block file name / path
@@ -1823,8 +1814,7 @@ reclassify_rule32_deforestation_consistency <- function(files,
         values <- restoreutils:::C_trajectory_deforestation_consistency(
             data = values,
             reference_class = deforestation_id,
-            target_class = target_class,
-            target_class_map = target_class_map
+            target_class = target_class
         )
         # Prepare and save results as raster
         sits:::.raster_write_block(

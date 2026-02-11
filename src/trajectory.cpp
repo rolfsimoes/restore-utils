@@ -208,7 +208,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis(NumericMatrix data, int re
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> mapping_table = R_NilValue) {
+NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data, int reference_class, int target_class) {
     // This rule was originally implemented to:
     // > "Se temos qualquer pastagem, ag anual (2ciclos), qualquer pastagem, o valor do meio (ag anual), vira pastagem"
 
@@ -227,63 +227,8 @@ NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data,
             int right_value = static_cast<int>(data(i, j + 1));
 
             // Define auxiliary variables
-            bool is_middle_valid;
-            bool is_left_equal_to_right;
-
-            // Extract source and target columns from DataFrame
-            if (mapping_table.isNotNull()) {
-                Rcpp::DataFrame mapping_table_df(mapping_table);
-                IntegerVector source = mapping_table_df["source"];
-                IntegerVector target = mapping_table_df["target"];
-                List indices_list = mapping_table_df["indices"];
-
-                // Convert left value
-                for (int k = 0; k < source.length(); k++) {
-                    if (source[k] == left_value) {
-                        // Get the indices vector for this mapping
-                        IntegerVector valid_indices = as<IntegerVector>(indices_list[k]) - 1;
-
-                        // Check if j is in the valid indices
-                        if (std::find(valid_indices.begin(), valid_indices.end(), j - 1) != valid_indices.end()) {
-                            left_value = target[k];
-                            break;
-                        }
-                    }
-                }
-
-                // Convert right value
-                for (int k = 0; k < source.length(); k++) {
-                    if (source[k] == right_value) {
-                        // Get the indices vector for this mapping
-                        IntegerVector valid_indices = as<IntegerVector>(indices_list[k]) - 1;
-
-                        // Check if j is in the valid indices
-                        if (std::find(valid_indices.begin(), valid_indices.end(), j + 1) != valid_indices.end()) {
-                            right_value = target[k];
-                            break;
-                        }
-                    }
-                }
-
-                // Compare pixel values
-                is_left_equal_to_right = left_value == right_value;
-            }
-
-            // Get left and right values from target_class
-            if (target_class.isNotNull()) {
-                // Get target class value
-                Rcpp::IntegerVector target_class_tmp(target_class);
-                int target_class_value = target_class_tmp[0];
-
-                // Compare if left and right are equal to the target class
-                bool is_left_equal_to_target = left_value == target_class_value;
-                bool is_right_equal_to_target = right_value == target_class_value;
-
-                // Define if left and right are equal
-                is_left_equal_to_right = is_left_equal_to_target && is_right_equal_to_target;
-            }
-
-            is_middle_valid = data(i, j) == reference_class;
+            bool is_middle_valid = data(i, j) == reference_class;
+            bool is_left_equal_to_right = left_value == target_class && right_value == target_class;
 
             if (is_left_equal_to_right && is_middle_valid) {
                 data(i, j) = left_value;
@@ -295,7 +240,7 @@ NumericMatrix C_trajectory_neighbor_majority_analysis_target(NumericMatrix data,
 }
 
 // [[Rcpp::export]]
-NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int reference_class, Rcpp::Nullable<Rcpp::IntegerVector> target_class = R_NilValue , Rcpp::Nullable<Rcpp::DataFrame> target_class_map = R_NilValue) {
+NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int reference_class, int target_class) {
     // This rule was originally implemented to:
     // > "Se temos desmatamento no ano x, todos os anos 1:x-1 deverao ser floresta"
 
@@ -308,43 +253,12 @@ NumericMatrix C_trajectory_deforestation_consistency(NumericMatrix data, int ref
 
     for (int i = 0; i < npixel; i++) {
         // remove edges (start: j = 1; end = j - 1)
-        for (int j = 1; j < nyear - 1; j++) {
-            //
+        for (int j = 0; j < nyear; j++) {
+            // If the current year is `reference_class`, apply consistency rule
             if (static_cast<int>(data(i, j)) == reference_class) {
-                int target_past_value = 0;
-
-                // Get target value from target_class
-                if (target_class.isNotNull()) {
-                    Rcpp::IntegerVector target_class_value(target_class);
-                    target_past_value = target_class_value[0];
-                }
-
-                // Get target value from target_class_map
-                if (target_class_map.isNotNull()) {
-
-                    Rcpp::DataFrame target_class_map_df(target_class_map);
-                    IntegerVector source = target_class_map_df["source"];
-                    IntegerVector target = target_class_map_df["target"];
-                    List indices_list = target_class_map_df["indices"];
-
-                    // Convert left value
-                    for (int k = 0; k < source.length(); k++) {
-                        if (source[k] == target_past_value) {
-                            // Get the indices vector for this mapping
-                            IntegerVector valid_indices = as<IntegerVector>(indices_list[k]) - 1;
-
-                            // Check if j is in the valid indices
-                            if (std::find(valid_indices.begin(), valid_indices.end(), j - 1) != valid_indices.end()) {
-                                target_past_value = target[k];
-                                break;
-                            }
-                        }
-                    }
-                }
-
                 // Fill past years with target value
                 for (int t = 0; t < j; t++) {
-                    data(i, t) = target_past_value;
+                    data(i, t) = target_class;
                 }
             }
         }
